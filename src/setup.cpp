@@ -5,14 +5,20 @@ void setupPins() {
 }
 
 void setupWiFi() {
-  Serial.begin(115200);
   wifiManager.autoConnect("NickStickIoT");
   ipaddress = WiFi.localIP().toString();
-  dbgPrint ("IP = %s", ipaddress.c_str());
+  slog("IP = %s", ipaddress.c_str());
 }
 
-void setupTime() {
-  configTime(2 * 3600, 0 * 3600, "0.nl.pool.ntp.org", "1.nl.pool.ntp.org", "2.nl.pool.ntp.org");
-  // dst parameter doesn't work... - make time adjust setting and reset time as menu option
+void IRAM_ATTR timerISR() {
+  portENTER_CRITICAL_ISR(&timerMux);
+  secTickCounter++;
+  portEXIT_CRITICAL_ISR(&timerMux); 
 }
 
+void setupTimer() {
+  timer = timerBegin(0, ESP.getCpuFreqMHz(), true);
+  timerAttachInterrupt(timer, &timerISR, true);
+  timerAlarmWrite(timer, 1000000, true);
+  timerAlarmEnable(timer);
+}

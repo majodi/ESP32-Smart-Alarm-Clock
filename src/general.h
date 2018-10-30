@@ -2,10 +2,12 @@
 #define GENERAL_H 1
 
 #include "constants.h"
+#include "timer_events.h"
 #include <time.h>
 
-void setTimeVars();
-char* dbgPrint( const char* format, ... );
+void slog( const char* format, ... );
 void blink( int count );
+void syncTime();
+void handleTimer();
 
 #endif

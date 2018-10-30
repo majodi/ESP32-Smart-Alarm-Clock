@@ -3,10 +3,11 @@
 
 #include "constants.h"
 #include "general.h"
+#include "timer_events.h"
 #include <WiFiManager.h>
 
 void setupPins();
 void setupWiFi();
-void setupTime();
+void setupTimer();
 
 #endif
