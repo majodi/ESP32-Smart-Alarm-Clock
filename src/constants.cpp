@@ -6,6 +6,7 @@
 WiFiManager wifiManager;
 const char* ssid = "not set";
 const char* password = "not set";
+String ipaddress = "";
 
 // ************
 // *** Time ***
@@ -23,8 +24,8 @@ int secondsCounter = 0;                                                   // cou
 int minutesCounter = 0;
 int hoursCounter = 0;
 int daysCounter = 0;
-hw_timer_t* timer;                                                        // hardware timer
-portMUX_TYPE timerMux;                                                    // for critical sections ISR variables
+hw_timer_t * timer = NULL;                                                // hardware timer
+portMUX_TYPE timerMux  = portMUX_INITIALIZER_UNLOCKED;                    // for critical sections ISR variables
 
 // *************
 // *** Debug ***
