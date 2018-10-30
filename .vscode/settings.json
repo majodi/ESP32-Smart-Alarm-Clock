@@ -1,0 +1,6 @@
+{
+    "terminal.integrated.env.osx": {
+        "PATH": "/Users/majodi/.platformio/penv/bin:/Users/majodi/.platformio/penv:/Users/majodi/dev/angular/google-cloud-sdk/bin:/Library/Frameworks/Python.framework/Versions/2.7/bin:/Library/Frameworks/Python.framework/Versions/3.6/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "PLATFORMIO_CALLER": "vscode"
+    }
+}
