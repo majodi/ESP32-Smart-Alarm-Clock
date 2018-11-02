@@ -1,7 +1,13 @@
 #include "setup.h"
 
 void setupPins() {                                                        // initialise pins
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED_BUILTIN,       OUTPUT);                                     // signal/debug purpose
+  pinMode(VS1053_xDCS,       OUTPUT);                                     // chip select SDI (Serial Data Interface)
+  pinMode(VS1053_xCS,        OUTPUT);                                     // chip select SCI (Serial Control Interface)
+  pinMode(VS1053_DREQ,       INPUT);                                      // data request
+
+  digitalWrite (VS1053_xDCS, HIGH);                                       // chip select is Active LOW
+  digitalWrite (VS1053_xCS,  HIGH);
 }
 
 void setupWiFi() {
@@ -17,9 +23,15 @@ void IRAM_ATTR timerISR() {
 }
 
 void setupTimer() {
-  // timer = timerBegin(0, (uint16_t) ESP.getCpuFreqMHz(), true);
   timer = timerBegin(0, 80, true);                                        // base signal used for ESP counters 80 MHz, so use prescaler of 80 for microseconds
   timerAttachInterrupt(timer, &timerISR, true);                           // attach interrupt
   timerAlarmWrite(timer, 1000000, true);                                  // set alarm
   timerAlarmEnable(timer);                                                // and enable it
+}
+
+void setupSPI() {
+  // *** for now only one SPI slave (VS1053)
+  SPISemaphore = xSemaphoreCreateMutex();                                 // create SPI Semaphore for exclusive use
+  SPI.begin (VS1053_SCK, VS1053_MISO, VS1053_MOSI);                       // init SPI
+  vsReset();
 }
