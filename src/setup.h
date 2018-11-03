@@ -3,6 +3,7 @@
 
 #include "constants.h"
 #include "general.h"
+#include "http.h"
 #include "timer_events.h"
 #include "vs1053.h"
 #include <WiFiManager.h>

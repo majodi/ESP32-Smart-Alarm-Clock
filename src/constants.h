@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <WiFiManager.h>
+#include <WiFiClientSecure.h>
+#include "private.h"
 
 // *** MCU pin layout ***
 #define VS1053_SCK 18
@@ -20,11 +22,16 @@ extern String ipaddress;
 extern WiFiManager wifiManager;
 
 // *** HTTP ***
+#define GCLOUD_TTS_HOST "texttospeech.googleapis.com"
+#define GCLOUD_TTS_PATH "/v1/text:synthesize?key="
 extern WiFiClient http;
+extern WiFiClientSecure https;
 extern char *host;
 extern char *path;
 extern int port;
+extern bool secureConnect;
 extern bool connected;
+extern String postData;
 
 // *** Time ***
 extern struct tm timeinfo;

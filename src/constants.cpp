@@ -8,10 +8,13 @@ String ipaddress = "";
 
 // *** HTTP ***
 WiFiClient http;                                                          // http client
+WiFiClientSecure https;
 char *host = "ice1.somafm.com";
 char *path = "/u80s-128-mp3";
 int port = 80;
+bool secureConnect = false;                                               // secure client (https) 
 bool connected = false;                                                   // is connected or not
+String postData;
 
 // *** Time ***
 struct tm timeinfo;                                                       // timeinfo structure for NTP server

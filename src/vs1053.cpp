@@ -53,6 +53,36 @@ void vsWriteWram(uint16_t address, uint16_t data) {                       // wri
   vsWriteRegister(VS1053_REG_WRAM, data);
 }
 
+void transferAvailableTTSMP3Data() {                                      // transfer waiting tts data to vs1053
+  char encbuf[129] = {0};                                                 // buffer for encoded data (we get base64 encoded data)
+  if (https.available()) {                                                // is there actual data waiting?
+    bool validResponseData = https.find("\"audioContent\": \"");          // find the audioContent token
+    while (https.available() && validResponseData) {                      // is token found assume data is valid
+      int r = https.readBytes(encbuf, 128);                               // read 4 blocks of 32 bytes encoded data
+      encbuf[r] = 0; // voor printen/loggen                               // put a delimiter at the end for if we need it for logging
+      int decodedLength = Base64.decodedLength(encbuf, r);                // wat will be the length of the decoded data?
+      char decodedString[decodedLength];                                  // reserve room for it
+      Base64.decode(decodedString, encbuf, r);                            // decode it
+      int offset = 0;         
+      while (offset < decodedLength) {                                    // write blocks of 32 bytes (probably 3 but to be shure this way)
+        uint8_t w = decodedLength - offset > 32 ? 32 : decodedLength - offset; // 32 bytes is wat the vs1053 can swallow at once
+        while (!digitalRead(VS1053_DREQ)) {}                              // first wait until the vs1053 is ready for this next bite
+        vsWriteBuffer((uint8_t *) decodedString + offset, w);             // and feed it to the VS1053
+        offset += w;                                                      // next bite
+      }
+    }
+  }
+}
+
+void transferAvailableMP3Data() {
+  if (digitalRead(VS1053_DREQ)) {                                         // if the VS1053 is hungry
+    if (http.available() > 0) {                                           // and we have food
+      uint8_t bytesread = http.read(mp3IOBuffer, 32);                     // get some food
+      vsWriteBuffer(mp3IOBuffer, bytesread);                              // and feed it to the VS1053
+    }
+  }
+}
+
 void vsSineTest() {                                                       // is it alive?
   uint16_t mode = vsReadRegister(VS1053_REG_MODE);                        // turn on tests (bit 5)
   mode |= 0x0020;

@@ -59,27 +59,3 @@ void handleTimer() {
     }
   }  
 }
-
-void httpConnect(char *host, int port) {
-  if (!http.connect(host, port)) {                                        // conect to a test station
-    connected = false;
-    slog("Connection failed");
-  } else {
-    connected = true;
-  }
-}
-
-void httpGetStream(char *host, char *path) {
-  http.print(String("GET ") + path + " HTTP/1.1\r\n" +
-                                      "Host: " + host + "\r\n" + 
-                                      "Connection: close\r\n\r\n");
-}
-
-void transferAvailableMP3Data() {
-  if (digitalRead(VS1053_DREQ)) {                                         // if the VS1053 is hungry
-    if (http.available() > 0) {                                           // and we have food
-      uint8_t bytesread = http.read(mp3IOBuffer, 32);                     // get some food
-      vsWriteBuffer(mp3IOBuffer, bytesread);                              // and feed it to the VS1053
-    }
-  }
-}

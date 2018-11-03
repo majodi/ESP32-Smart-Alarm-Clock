@@ -21,6 +21,7 @@ void setup() {
   // No Patches loaded...
   // No real buffering (todo: FreeRTOS queues)
   // Single processor (todo: use second core)
+  // simple hardcoded JSON (todo: json functionality)
 
   // Debug info - check if vs1053 is alive
   slog("VS1053_REG_MODE   = %x (HEX)", vsReadRegister(VS1053_REG_MODE));
@@ -29,14 +30,24 @@ void setup() {
   slog("VS1053_REG_AUDATA = %x (HEX)", vsReadRegister(VS1053_REG_AUDATA));
   slog("VS1053_REG_VOLUME = %x (HEX)", vsReadRegister(VS1053_REG_VOLUME));
 
-  vsSineTest();                                                           // quick test for sound (debug)
-  host = "ice1.somafm.com";
-  path = "/u80s-128-mp3";
+  // internet radio test
+  // vsSineTest();                                                           // quick test for sound (debug)
+  // host = "ice1.somafm.com";
+  // path = "/u80s-128-mp3";
+  // httpConnect(host, port);                                                // connect to host
+  // httpGetRequest(host, path);                                             // request stream
+
+  // TTS test
+  host = GCLOUD_TTS_HOST;
+  path = GCLOUD_TTS_PATH GCLOUD_KEY;
+  slog(path);
+  secureConnect = true;
   httpConnect(host, port);                                                // connect to host
-  httpGetStream(host, path);                                              // request stream
+  httpPostRequest(host, path, TTSPostData("dit is een test."), "application/json;charset=UTF-8"); // request stream
 }
 
 void loop() {
-  transferAvailableMP3Data();
+  // transferAvailableMP3Data(); // internet radio test
+  transferAvailableTTSMP3Data(); // TTS test
   handleTimer();
 }
