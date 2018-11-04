@@ -59,11 +59,11 @@ void transferAvailableTTSMP3Data() {                                      // tra
     bool validResponseData = https.find("\"audioContent\": \"");          // find the audioContent token
     while (https.available() && validResponseData) {                      // is token found assume data is valid
       int r = https.readBytes(encbuf, 128);                               // read 4 blocks of 32 bytes encoded data
-      encbuf[r] = 0; // voor printen/loggen                               // put a delimiter at the end for if we need it for logging
+      encbuf[r] = 0;                                                      // put a delimiter at the end for if we need it for logging
       int decodedLength = Base64.decodedLength(encbuf, r);                // wat will be the length of the decoded data?
       char decodedString[decodedLength];                                  // reserve room for it
       Base64.decode(decodedString, encbuf, r);                            // decode it
-      int offset = 0;         
+      int offset = 0;
       while (offset < decodedLength) {                                    // write blocks of 32 bytes (probably 3 but to be shure this way)
         uint8_t w = decodedLength - offset > 32 ? 32 : decodedLength - offset; // 32 bytes is wat the vs1053 can swallow at once
         while (!digitalRead(VS1053_DREQ)) {}                              // first wait until the vs1053 is ready for this next bite

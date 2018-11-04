@@ -1,5 +1,7 @@
 #include "constants.h"
 
+char ttrbuf[1500] = {0};                                                        // text to read
+
 // *** WiFi ***
 WiFiManager wifiManager;
 const char* ssid = "not set";                                             // not used with WiFi Manager

@@ -24,6 +24,8 @@ extern WiFiManager wifiManager;
 // *** HTTP ***
 #define GCLOUD_TTS_HOST "texttospeech.googleapis.com"
 #define GCLOUD_TTS_PATH "/v1/text:synthesize?key="
+#define NEWS_API_HOST "newsapi.org"
+#define NEWS_API_PATH "/v2/top-headlines?sources=rtl-nieuws&apiKey="
 extern WiFiClient http;
 extern WiFiClientSecure https;
 extern char *host;
@@ -80,5 +82,10 @@ extern uint8_t mp3IOBuffer[32];
 #define VS1053_MODE_SM_ADPCM 0x1000
 #define VS1053_MODE_SM_LINE1 0x4000
 #define VS1053_MODE_SM_CLKRANGE 0x8000
+
+// *** TTR ***
+#define TTR_MAXLEN 1500
+#define TTR_MAXNEWSITEMLEN 320
+extern char ttrbuf[TTR_MAXLEN];
 
 #endif

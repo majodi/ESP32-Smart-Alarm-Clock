@@ -5,8 +5,8 @@
 #include "general.h"
 
 void httpConnect(char *host, int port);
-String TTSPostData(String text);
 void httpGetRequest(char *host, char *path);
 void httpPostRequest(char *host, char *path, String postData, String contentType);
+void httpWaitAvailable(int timeOutTime);
 
 #endif

@@ -4,26 +4,11 @@ void httpConnect(char *host, int port) {
   bool success = secureConnect ? https.connect(host, port = 80 ? 443 : port) : http.connect(host, port);
   if (!success) {                                                         // conected?
     connected = false;
-    slog("Connection failed");
+    slog("Connection to %s FAILED", host);
   } else {
     connected = true;
+    slog("Connected to %s", host);
   }
-}
-
-String TTSPostData(String text) {
-  return String("{\r\n") +
-"     'input':{\r\n" +
-"       'text':'" + text + "'\r\n" +
-"     },\r\n" +
-"     'voice':{\r\n" +
-"       'languageCode':'nl-NL',\r\n" +
-"       'name':'nl-NL-Wavenet-A',\r\n" +
-"       'ssmlGender':'FEMALE'\r\n" +
-"     },\r\n" +
-"     'audioConfig':{\r\n" +
-"       'audioEncoding':'MP3'\r\n" +
-"     }\r\n" +
-"   }";
 }
 
 void httpGetRequest(char *host, char *path) {
@@ -37,7 +22,7 @@ void httpGetRequest(char *host, char *path) {
   }
 }
 
-void httpPostRequest(char *host, char *path, String postData, String contentType) { // application/json;charset=UTF-8
+void httpPostRequest(char *host, char *path, String postData, String contentType) {
   String postRequest = String("POST ") + path + " HTTP/1.1\r\n" +
                                                  "Host: " + host + "\r\n" + 
                                                  "Connection: close\r\n" +
@@ -48,5 +33,13 @@ void httpPostRequest(char *host, char *path, String postData, String contentType
     https.print(postRequest);
   } else {
     http.print(postRequest);
+  }
+}
+
+void httpWaitAvailable(int timeOutTime) {
+  int countDown = timeOutTime;
+  while (!(secureConnect ? https.available() : http.available()) && !(timeOutTime && !countDown)) {
+    delay(1);
+    countDown = countDown ? countDown-- : 0;
   }
 }

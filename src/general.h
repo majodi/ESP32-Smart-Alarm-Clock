@@ -10,5 +10,6 @@ void slog(const char* format, ...);
 void blink(int count);
 void syncTime();
 void handleTimer();
+void cleanStr(char *target, char *unwanted);
 
 #endif

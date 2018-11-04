@@ -59,3 +59,11 @@ void handleTimer() {
     }
   }  
 }
+
+void cleanStr(char *target, char *unwanted) {                             // replace unwanted chars with a space
+  char * match = strpbrk(target, unwanted);
+  while (match != NULL) {
+    *match = ' ';
+    match = strpbrk(match+1, unwanted);
+  }
+}
