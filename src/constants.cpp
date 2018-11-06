@@ -17,10 +17,13 @@ int port = 80;
 bool secureConnect = false;                                               // secure client (https) 
 bool connected = false;                                                   // is connected or not
 String postData;
+char googleToken[200] = {0};
 
 // *** Time ***
 struct tm timeinfo;                                                       // timeinfo structure for NTP server
 char timeCstr[9] = "00:00:00";                                            // textual representation of internal time
+char dayStartZuluCstr[25] = "2000-01-01T00:00:00.000Z";                   // zulu time format
+char dayEndZuluCstr[25] = "2000-01-01T00:00:00.000Z";                     // zulu time format
 bool timeValid = false;                                                   // is time valid (retrieved from NTP on last attempt)
 int timeSyncRetries = 0;
 

@@ -13,6 +13,7 @@ void setup() {
     ESP.getFreeHeap());
   setupWiFi();                                                            // connect to WiFi
   configTime(1 * 3600, 0 * 3600, "pool.ntp.org");                         // set time server config for Dutch time
+  syncTime();                                                             // first time sync (later every hour)
   setupPins();                                                            // initialise pins
   setupTimer();                                                           // setup timer for timer_events
   setupSPI();                                                             // setup SPI with VS1053
@@ -35,19 +36,17 @@ void setup() {
   // vsSineTest();                                                           // quick test for sound (debug)
   // host = "ice1.somafm.com";
   // path = "/u80s-128-mp3";
-  // secureConnect = false;
-  // httpConnect(host, port);                                                // connect to host
+  // httpConnect(host, port, false);                                         // connect to host
   // httpGetRequest(host, path);                                             // request stream
 
   // TTS test
   // host = GCLOUD_TTS_HOST;
   // path = GCLOUD_TTS_PATH GCLOUD_KEY;
-  // secureConnect = true;
-  // httpConnect(host, port);                                                // connect to host
+  // httpConnect(host, port, true);                                          // connect to host
   // httpPostRequest(host, path, TTSPostData("dit is een test."), "application/json;charset=UTF-8"); // request stream
 
-  // read latest news test
-  prepareTTSNews("Goedemorgen, het laatste nieuws van vandaag: ... ", 3);
+  // read latest news, weather and calendar test
+  prepareTTSInfo("Goedemorgen, ik hoop dat u lekker heeft geslapen. ", 3);
   requestTTSMP3Data();
 
 }

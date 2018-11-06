@@ -6,7 +6,8 @@
 
 String TTSPostData(String text);
 void ttrAddNews(int nrItems);
-void prepareTTSNews(char *intro, int nrItems);
+void ttrAddWeather();
+void prepareTTSInfo(char *intro, int nrItems);
 void requestTTSMP3Data();
 
 #endif

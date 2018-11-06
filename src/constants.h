@@ -26,6 +26,14 @@ extern WiFiManager wifiManager;
 #define GCLOUD_TTS_PATH "/v1/text:synthesize?key="
 #define NEWS_API_HOST "newsapi.org"
 #define NEWS_API_PATH "/v2/top-headlines?sources=rtl-nieuws&apiKey="
+#define NEWS_INTRO "Het actuele nieuws van vandaag: "
+#define WEATHER_API_HOST "weerlive.nl"
+#define WEATHER_API_PATH "/api/json-data-10min.php?locatie="
+#define WEATHER_INTRO "Het weer voor vandaag: "
+#define GOOGLE_APIS_HOST "www.googleapis.com"
+#define GOOGLE_OAUTH_PATH "/oauth2/v4/token"
+#define GOOGLE_CALENDAR_PATH "/calendar/v3/calendars/primary/events"
+#define CALENDAR_INTRO1 "Je agenda voor vandaag: "
 extern WiFiClient http;
 extern WiFiClientSecure https;
 extern char *host;
@@ -34,10 +42,13 @@ extern int port;
 extern bool secureConnect;
 extern bool connected;
 extern String postData;
+extern char googleToken[200];
 
 // *** Time ***
 extern struct tm timeinfo;
 extern char timeCstr[9];
+extern char dayStartZuluCstr[25];
+extern char dayEndZuluCstr[25];
 extern bool timeValid;
 extern int timeSyncRetries;
 
