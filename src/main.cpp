@@ -46,7 +46,8 @@ void setup() {
   // httpPostRequest(host, path, TTSPostData("dit is een test."), "application/json;charset=UTF-8"); // request stream
 
   // read latest news, weather and calendar test
-  prepareTTSInfo("Goedemorgen, ik hoop dat u lekker heeft geslapen. ", 3);
+
+  prepareTTSInfo("ik hoop dat u lekker heeft geslapen. <break strength=\"strong\"/>", 3);
   requestTTSMP3Data();
 
 }

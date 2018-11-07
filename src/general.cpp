@@ -32,6 +32,10 @@ void syncTime() {                                                         // syn
              timeinfo.tm_hour,
              timeinfo.tm_min,
              timeinfo.tm_sec);
+    sprintf (dateCstr, "%04d-%02d-%02d",                                  // format internal date to Cstr
+           timeinfo.tm_year + 1900,
+           timeinfo.tm_mon + 1,
+           timeinfo.tm_mday);
     slog("internal time synced: %s", timeCstr);
   }
 }

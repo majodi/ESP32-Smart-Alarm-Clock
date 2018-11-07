@@ -26,14 +26,11 @@ extern WiFiManager wifiManager;
 #define GCLOUD_TTS_PATH "/v1/text:synthesize?key="
 #define NEWS_API_HOST "newsapi.org"
 #define NEWS_API_PATH "/v2/top-headlines?sources=rtl-nieuws&apiKey="
-#define NEWS_INTRO "Het actuele nieuws van vandaag: "
 #define WEATHER_API_HOST "weerlive.nl"
 #define WEATHER_API_PATH "/api/json-data-10min.php?locatie="
-#define WEATHER_INTRO "Het weer voor vandaag: "
 #define GOOGLE_APIS_HOST "www.googleapis.com"
 #define GOOGLE_OAUTH_PATH "/oauth2/v4/token"
 #define GOOGLE_CALENDAR_PATH "/calendar/v3/calendars/primary/events"
-#define CALENDAR_INTRO1 "Je agenda voor vandaag: "
 extern WiFiClient http;
 extern WiFiClientSecure https;
 extern char *host;
@@ -46,6 +43,7 @@ extern char googleToken[200];
 
 // *** Time ***
 extern struct tm timeinfo;
+extern char dateCstr[11];
 extern char timeCstr[9];
 extern char dayStartZuluCstr[25];
 extern char dayEndZuluCstr[25];
@@ -96,7 +94,16 @@ extern uint8_t mp3IOBuffer[32];
 
 // *** TTR ***
 #define TTR_MAXLEN 1500
+#define TTR_LEFT sizeof(ttrbuf) - strlen(ttrbuf) - 1
 #define TTR_MAXNEWSITEMLEN 320
+#define SSML_PAUSE ".<break time=\"500ms\"/>"
+#define SSML_MORNING "Goedemorgen."
+#define SSML_AFTERNOON "Goedemiddag."
+#define SSML_EVENING "Goedenavond."
+#define SSML_DATE_ANOUNCEMENT "Het is vandaag "
+#define SSML_NEWS_INTRO "Het actuele nieuws van vandaag. " SSML_PAUSE
+#define SSML_WEATHER_INTRO "Het weer voor vandaag. " SSML_PAUSE
+#define SSML_CALENDAR_INTRO1 "Je agenda voor vandaag. " SSML_PAUSE
 extern char ttrbuf[TTR_MAXLEN];
 
 #endif

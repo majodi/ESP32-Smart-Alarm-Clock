@@ -21,6 +21,7 @@ char googleToken[200] = {0};
 
 // *** Time ***
 struct tm timeinfo;                                                       // timeinfo structure for NTP server
+char dateCstr[11] = "2000-01-01";                                         // textual representation of internal date
 char timeCstr[9] = "00:00:00";                                            // textual representation of internal time
 char dayStartZuluCstr[25] = "2000-01-01T00:00:00.000Z";                   // zulu time format
 char dayEndZuluCstr[25] = "2000-01-01T00:00:00.000Z";                     // zulu time format
