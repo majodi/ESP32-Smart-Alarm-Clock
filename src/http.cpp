@@ -12,10 +12,19 @@ void httpConnect(char *host, int port, bool secure) {
   }
 }
 
+void httpEnd() {
+  if (secureConnect) {
+    https.stop();
+  } else {
+    http.stop();
+  }
+}
+
 void httpGetRequest(char *host, char *path) {
   String getRequest = String("GET ") + path + " HTTP/1.1\r\n" +
                                       "Host: " + host + "\r\n" + 
                                       "Connection: close\r\n\r\n";
+  // Serial.println(getRequest);
   if (secureConnect) {
     https.print(getRequest);
   } else {
@@ -61,4 +70,10 @@ bool httpFetchAndAdd(char *token, char *target, int maxlen) {
     slog("fetch failed: %s", token);
     return false;
   }
+}
+
+void logResponse(int nrBytes) {
+  char response[nrBytes + 1];
+  secureConnect ? https.readBytes(response, nrBytes) : http.readBytes(response, nrBytes);
+  slog("response: %s", response);
 }

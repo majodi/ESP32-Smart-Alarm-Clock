@@ -3,6 +3,7 @@
 
 #include "constants.h"
 #include "http.h"
+#include "vs1053.h"
 
 String TTSPostData(String text);
 void ttrAddNews(int nrItems);

@@ -7,6 +7,7 @@
 #include "timer_events.h"
 #include "vs1053.h"
 #include "ttr.h"
+#include "alarm.h"
 #include <WiFiManager.h>
 
 void setupPins();

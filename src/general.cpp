@@ -27,7 +27,6 @@ void syncTime() {                                                         // syn
     slog("time sync failed!");
   } else {
     timeValid = true;                                                     // internal time up-to-date with real time
-    timeSyncRetries = 0;                                                  // reset retry count for next regular sync
     sprintf (timeCstr, "%02d:%02d:%02d",                                  // format internal time to Cstr
              timeinfo.tm_hour,
              timeinfo.tm_min,
@@ -38,6 +37,17 @@ void syncTime() {                                                         // syn
            timeinfo.tm_mday);
     slog("internal time synced: %s", timeCstr);
   }
+}
+
+void setDateTimeStrn(char* dest, time_t adjustment) {                     // set date/time with adjustment in seconds
+  time_t newSeconds = mktime(&timeinfo) + adjustment;                     // get current time seconds and adjust
+  struct tm plus24h = *localtime(&newSeconds);                            // create date/time structure
+  sprintf (dest, "%04d-%02d-%02dT%02d:%02d:00.000Z",                      // format date/time and write to dest cstr
+           plus24h.tm_year + 1900,
+           plus24h.tm_mon + 1,
+           plus24h.tm_mday,
+           plus24h.tm_hour,
+           plus24h.tm_min);
 }
 
 void handleTimer() {

@@ -5,6 +5,7 @@
 #include <SPI.h>
 #include <WiFiManager.h>
 #include <WiFiClientSecure.h>
+#include <TM1637Display.h>
 #include "private.h"
 
 // *** MCU pin layout ***
@@ -14,6 +15,8 @@
 #define VS1053_xDCS 32
 #define VS1053_xCS 5
 #define VS1053_DREQ 4
+#define TM1637_CLK 16
+#define TM1637_DIO 17
 
 // *** WiFi ***
 extern const char* ssid;
@@ -47,8 +50,13 @@ extern char dateCstr[11];
 extern char timeCstr[9];
 extern char dayStartZuluCstr[25];
 extern char dayEndZuluCstr[25];
+extern char alarmSearchStartZuluCstr[25];
+extern char alarmSearchEndZuluCstr[25];
 extern bool timeValid;
-extern int timeSyncRetries;
+extern bool dots;
+extern int alarmHour;
+extern int alarmMinute;
+extern bool alarmSet;
 
 // *** Timer ***
 extern volatile int secTickCounter;
@@ -59,6 +67,10 @@ extern int daysCounter;
 extern hw_timer_t* timer;
 extern portMUX_TYPE timerMux;
 
+// *** TM1637 ***
+// extern TM1637Display display(TM1637_CLK, TM1637_DIO);
+extern TM1637Display display;//(TM1637_CLK, TM1637_DIO);
+
 // *** Debug ***
 extern bool logging;
 
@@ -67,6 +79,12 @@ extern SemaphoreHandle_t SPISemaphore;
 
 // *** VS1053 ***
 extern uint8_t mp3IOBuffer[32];
+extern int streamType;
+extern bool radioOnTTSEnd;
+
+#define NO_ACTIVE_STREAM  0
+#define MP3_STREAM  1
+#define TTS_STREAM  2
 
 #define VS1053_REG_MODE  0x00
 #define VS1053_REG_STATUS 0x01

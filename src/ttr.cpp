@@ -33,7 +33,7 @@ void ttrAddNews(int nrItems) {                                            // add
     itemCnt--;
     validResponseData = https.find(",\"title\":\"");                      // prepare pointer to next item
   }
-  https.stop();                                                           // don't need this server anymore
+  httpEnd();                                                              // don't need this server anymore
 }
 
 void ttrAddWeather() {                                                    // add news items to tts buffer
@@ -47,7 +47,7 @@ void ttrAddWeather() {                                                    // add
   strncat(ttrbuf, " graden. " SSML_PAUSE " De verdere verwachtingen zijn. " SSML_PAUSE, TTR_LEFT); // add unit, pause, anouncement for summary
   httpFetchAndAdd(", \"verw\": \"", ttrbuf, TTR_LEFT);                    // weather summary
   strncat(ttrbuf, ". " SSML_PAUSE, TTR_LEFT);                             // add pause
-  http.stop();                                                            // don't need this server anymore
+  httpEnd();                                                              // don't need this server anymore
 }
 
 void ttrAddCalendar() {                                                   // add calendar items to tts buffer
@@ -73,7 +73,7 @@ void ttrAddCalendar() {                                                   // add
   strncat(enhancedPath, dayEndZuluCstr, 25);
   strncat(enhancedPath, "&access_token=", 15);
   strncat(enhancedPath, googleToken, 350 - strlen(enhancedPath));
-  https.stop();                                                           // end former connection
+  httpEnd();                                                              // end former connection
   delay(500);                                                             // give it some time
   httpConnect(host, port, true);                                          // connect
   httpGetRequest(host, enhancedPath);                                     // send get request
@@ -81,7 +81,6 @@ void ttrAddCalendar() {                                                   // add
   int itemCnt = 0;
   while (validResponseData && httpWaitAvailable(2000)) {
     char itemText[51] = {0};
-    char itemTime[6] = {0};
     validResponseData = httpFetchAndAdd("\"summary\": \"", itemText, 50); // fetch items for today (including passed items as reminder) and save in temp var
     if (validResponseData) {
       validResponseData = https.find("\"dateTime\": \"");                 // advance to dateTime
@@ -99,7 +98,7 @@ void ttrAddCalendar() {                                                   // add
   if (!itemCnt) {
     strncat(ttrbuf, "Geen agenda items vandaag.", TTR_LEFT);
   }
-  https.stop();
+  httpEnd();
 }
 
 void prepareTTSInfo(char *intro, int nrItems) {                           // paste intro to buffer, add news and clean invalid char(s)
@@ -114,8 +113,10 @@ void prepareTTSInfo(char *intro, int nrItems) {                           // pas
 }
 
 void requestTTSMP3Data() {                                                // request tts
+  stopRadio();                                                            // if still playing...
   host = GCLOUD_TTS_HOST;
   path = GCLOUD_TTS_PATH GCLOUD_KEY;
   httpConnect(host, port, true);                                          // connect to host
   httpPostRequest(host, path, TTSPostData(String(ttrbuf)), "application/json;charset=UTF-8"); // request stream
+  streamType = TTS_STREAM;                                                // stream should be picked up by the right handler
 }

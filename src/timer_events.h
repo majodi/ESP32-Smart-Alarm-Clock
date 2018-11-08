@@ -3,6 +3,7 @@
 
 #include "constants.h"
 #include "general.h"
+#include "alarm.h"
 
 void eachSecond();
 void eachMinute();

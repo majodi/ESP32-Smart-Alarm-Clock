@@ -53,11 +53,26 @@ void vsWriteWram(uint16_t address, uint16_t data) {                       // wri
   vsWriteRegister(VS1053_REG_WRAM, data);
 }
 
+void startRadio() {
+  host = "ice1.somafm.com";                                               // todo: make configurable
+  path = "/u80s-128-mp3";
+  httpConnect(host, port, false);                                         // connect to host
+  httpGetRequest(host, path);                                             // request stream
+  streamType = MP3_STREAM;                                                // set stream type to MP3 data
+}
+
+void stopRadio() {
+  if (streamType == MP3_STREAM) {
+    streamType = NO_ACTIVE_STREAM;                                        // set stream type to none
+    httpEnd();
+  }
+}
+
 void transferAvailableTTSMP3Data() {                                      // transfer waiting tts data to vs1053
   char encbuf[129] = {0};                                                 // buffer for encoded data (we get base64 encoded data)
-  if (https.available()) {                                                // is there actual data waiting?
+  if (httpWaitAvailable(2000)) {                                          // is there actual data waiting?
     bool validResponseData = https.find("\"audioContent\": \"");          // find the audioContent token
-    while (https.available() && validResponseData) {                      // is token found assume data is valid
+    while (httpWaitAvailable(2000) && validResponseData) {                // is token found assume data is valid
       int r = https.readBytes(encbuf, 128);                               // read 4 blocks of 32 bytes encoded data
       encbuf[r] = 0;                                                      // put a delimiter at the end for if we need it for logging
       int decodedLength = Base64.decodedLength(encbuf, r);                // wat will be the length of the decoded data?
@@ -71,14 +86,23 @@ void transferAvailableTTSMP3Data() {                                      // tra
         offset += w;                                                      // next bite
       }
     }
+    httpEnd();                                                            // assume stream has ended (time-out was 2sec)
+    streamType = NO_ACTIVE_STREAM;                                        // set stream to none
+    if (radioOnTTSEnd) {                                                  // do we want radio after the talking?
+      radioOnTTSEnd = false;                                              // reset flag for next talk
+      startRadio();                                                       // and start radio
+    }
   }
 }
 
 void transferAvailableMP3Data() {
   if (digitalRead(VS1053_DREQ)) {                                         // if the VS1053 is hungry
-    if (http.available() > 0) {                                           // and we have food
-      uint8_t bytesread = http.read(mp3IOBuffer, 32);                     // get some food
+    if (httpWaitAvailable(2000)) {                                        // and we have food
+      uint8_t bytesread = secureConnect ? https.read(mp3IOBuffer, 32) : http.read(mp3IOBuffer, 32); // get some food
       vsWriteBuffer(mp3IOBuffer, bytesread);                              // and feed it to the VS1053
+    } else {
+      httpEnd();                                                          // assume stream has ended (time-out was 2sec)
+      streamType = NO_ACTIVE_STREAM;
     }
   }
 }
