@@ -10,10 +10,11 @@ void eachMinute() {
   slog("minute event");
   syncTime();                                                             // get up-to-date with time server
   handleAlarm();                                                          // handle possible alarm
+  handleSnooze();                                                         // handle possible snooze state
 }
 
 void eachHour() {
-  pollAlarmTimeSetting();                                                 // see if the alarm time can be found and set alarm for (new) time
+  pollAlarmTimeSetting(false);                                            // see if the alarm time can be found and set alarm for (new) time (silent - no feedback)
 }
 
 void eachDay() {

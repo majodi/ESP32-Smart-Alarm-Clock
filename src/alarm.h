@@ -5,7 +5,6 @@
 #include "http.h"
 #include "ttr.h"
 
-void pollAlarmTimeSetting();
-void handleAlarm();
+void pollAlarmTimeSetting(bool feedback);
 
 #endif

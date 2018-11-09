@@ -8,11 +8,13 @@
 #include "vs1053.h"
 #include "ttr.h"
 #include "alarm.h"
+#include "handlers.h"
 #include <WiFiManager.h>
 
 void setupPins();
 void setupWiFi();
 void setupTimer();
+void setupTouch();
 void setupSPI();
 
 #endif

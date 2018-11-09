@@ -25,13 +25,8 @@ char dateCstr[11] = "2000-01-01";                                         // tex
 char timeCstr[9] = "00:00:00";                                            // textual representation of internal time
 char dayStartZuluCstr[25] = "2000-01-01T00:00:00.000Z";                   // start of day zulu time format
 char dayEndZuluCstr[25] = "2000-01-01T00:00:00.000Z";                     // end of day zulu time format
-char alarmSearchStartZuluCstr[25];                                        // start of alarm search zulu time format
-char alarmSearchEndZuluCstr[25];                                          // end of alarm search zulu time format
 bool timeValid = false;                                                   // is time valid (retrieved from NTP on last attempt)
 bool dots = true;                                                         // show dots (seconds indicator)
-int alarmHour;                                                            // alarm time
-int alarmMinute;
-bool alarmSet = false;                                                    // alarm status
 
 // *** Timer ***
 volatile int secTickCounter = 0;                                          // seconds tick counter (counts seconds since last handled)
@@ -44,6 +39,10 @@ portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;                    // for 
 
 // *** TM1637 ***
 TM1637Display display(TM1637_CLK, TM1637_DIO);                            // display
+const uint8_t TM1637_tijd[] = {120, 6, 30, 94};                           // display word "tijd"
+const uint8_t TM1637_niet[] = {55, 6, 121, 120};                          // display word "niet"
+const uint8_t TM1637_fout[] = {113, 126, 62, 120};                        // display word "fout"
+const uint8_t TM1637_info[] = {6, 55, 113, 126};                          // display word "info"
 
 // *** Debug ***
 bool logging = true;                                                      // controls Serial console log info on/off
@@ -55,3 +54,17 @@ SemaphoreHandle_t SPISemaphore = NULL;                                    // sem
 uint8_t mp3IOBuffer[32];                                                  // IO buffer
 int streamType = NO_ACTIVE_STREAM;                                        // no stream active
 bool radioOnTTSEnd = false;                                               // schedule radio after finishing tts
+
+// *** Touch ***
+uint16_t touchThreshold = 45;                                             // touch sensitivity
+volatile bool touchDetected = false;                                      // touch detection flag is false
+
+// *** Alarm ***
+int alarmState = ALARM_PENDING;                                           // assume waiting for alarm
+char alarmSearchStartZuluCstr[25];                                        // start of alarm search zulu time format
+char alarmSearchEndZuluCstr[25];                                          // end of alarm search zulu time format
+int alarmHour;                                                            // alarm time
+int alarmMinute;
+bool alarmSet = false;                                                    // alarm status
+time_t lastForcedPollAlarmTime = 0;                                       // reset time of last forced polling of alarmTime setting
+time_t snoozeStarted = 0;                                                 // when snooze started

@@ -3,6 +3,7 @@
 
 #include "constants.h"
 #include "general.h"
+#include "handlers.h"
 #include <Base64.h>
 
 void vsReset();

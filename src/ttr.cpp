@@ -102,6 +102,7 @@ void ttrAddCalendar() {                                                   // add
 }
 
 void prepareTTSInfo(char *intro, int nrItems) {                           // paste intro to buffer, add news and clean invalid char(s)
+  display.setSegments(TM1637_info);                                       // show "info" on display
   strncpy(ttrbuf, (unsigned)(timeinfo.tm_hour-0) < (12) ? SSML_MORNING : (unsigned)(timeinfo.tm_hour-12) < (6) ? SSML_AFTERNOON : SSML_EVENING, TTR_MAXLEN - 1); // greeting
   strncat(ttrbuf, "Het is vandaag ", TTR_LEFT);
   strncat(ttrbuf, "<say-as interpret-as=\"date\" format=\"yyyymmdd\" detail=\"1\">", TTR_LEFT); strncat(ttrbuf, dateCstr, TTR_LEFT); strncat(ttrbuf, "</say-as>, ", TTR_LEFT); // say date

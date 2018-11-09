@@ -22,11 +22,21 @@ void IRAM_ATTR timerISR() {
   portEXIT_CRITICAL_ISR(&timerMux); 
 }
 
+void IRAM_ATTR touchISR() {
+  portENTER_CRITICAL_ISR(&timerMux);                                      // critical section for writing shared var
+  touchDetected = true;
+  portEXIT_CRITICAL_ISR(&timerMux); 
+}
+
 void setupTimer() {
   timer = timerBegin(0, 80, true);                                        // base signal used for ESP counters 80 MHz, so use prescaler of 80 for microseconds
   timerAttachInterrupt(timer, &timerISR, true);                           // attach interrupt
   timerAlarmWrite(timer, 1000000, true);                                  // set alarm
   timerAlarmEnable(timer);                                                // and enable it
+}
+
+void setupTouch() {
+  touchAttachInterrupt(TOUCH_PAD, touchISR, touchThreshold);
 }
 
 void setupSPI() {

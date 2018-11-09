@@ -50,30 +50,6 @@ void setDateTimeStrn(char* dest, time_t adjustment) {                     // set
            plus24h.tm_min);
 }
 
-void handleTimer() {
-  if (secTickCounter > 0) {                                               // at least one second passed?
-    secondsCounter += secTickCounter;                                     // inc seconds
-    portENTER_CRITICAL(&timerMux);
-    secTickCounter = 0;                                                   // reset ISR secTick counter
-    portEXIT_CRITICAL(&timerMux);
-    eachSecond();                                                         // fire event
-    if (secondsCounter > 60) {                                            // minute passed?
-      minutesCounter++;                                                   // inc minutes
-      secondsCounter = 0;
-      eachMinute();                                                       // fire event
-      if (minutesCounter > 60) {                                          // hour passed?
-        hoursCounter++;                                                   // inc hours
-        minutesCounter = 0;
-        eachHour();                                                       // fire event
-        if (hoursCounter % 24 == 0) {                                     // day passed?
-          daysCounter++;                                                  // inc days
-          eachDay();                                                      // fire event
-        }
-      }
-    }
-  }  
-}
-
 void cleanStr(char *target, char *unwanted) {                             // replace unwanted chars with a space
   char * match = strpbrk(target, unwanted);
   while (match != NULL) {

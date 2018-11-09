@@ -17,6 +17,7 @@
 #define VS1053_DREQ 4
 #define TM1637_CLK 16
 #define TM1637_DIO 17
+#define TOUCH_PAD 15
 
 // *** WiFi ***
 extern const char* ssid;
@@ -50,13 +51,8 @@ extern char dateCstr[11];
 extern char timeCstr[9];
 extern char dayStartZuluCstr[25];
 extern char dayEndZuluCstr[25];
-extern char alarmSearchStartZuluCstr[25];
-extern char alarmSearchEndZuluCstr[25];
 extern bool timeValid;
 extern bool dots;
-extern int alarmHour;
-extern int alarmMinute;
-extern bool alarmSet;
 
 // *** Timer ***
 extern volatile int secTickCounter;
@@ -68,8 +64,11 @@ extern hw_timer_t* timer;
 extern portMUX_TYPE timerMux;
 
 // *** TM1637 ***
-// extern TM1637Display display(TM1637_CLK, TM1637_DIO);
-extern TM1637Display display;//(TM1637_CLK, TM1637_DIO);
+extern TM1637Display display;
+extern const uint8_t TM1637_tijd[];
+extern const uint8_t TM1637_niet[];
+extern const uint8_t TM1637_fout[];
+extern const uint8_t TM1637_info[];
 
 // *** Debug ***
 extern bool logging;
@@ -123,5 +122,22 @@ extern bool radioOnTTSEnd;
 #define SSML_WEATHER_INTRO "Het weer voor vandaag. " SSML_PAUSE
 #define SSML_CALENDAR_INTRO1 "Je agenda voor vandaag. " SSML_PAUSE
 extern char ttrbuf[TTR_MAXLEN];
+
+// *** Touch ***
+extern uint16_t touchThreshold;
+extern volatile bool touchDetected;
+
+// *** Alarm ***
+#define ALARM_PENDING 0
+#define ALARM_ACTIVE 1
+#define ALARM_SNOOZED 3
+extern char alarmSearchStartZuluCstr[25];
+extern char alarmSearchEndZuluCstr[25];
+extern int alarmHour;
+extern int alarmMinute;
+extern bool alarmSet;
+extern int alarmState;
+extern time_t lastForcedPollAlarmTime;
+extern time_t snoozeStarted;
 
 #endif

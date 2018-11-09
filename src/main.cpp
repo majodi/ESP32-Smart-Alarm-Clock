@@ -17,9 +17,10 @@ void setup() {
   setupPins();                                                            // initialise pins
   setupTimer();                                                           // setup timer for timer_events
   setupSPI();                                                             // setup SPI with VS1053
+  setupTouch();                                                           // setup touch(pad)
   blink(50);                                                              // signal end of setup
   display.setBrightness(0x0f);                                            // turn on display
-  pollAlarmTimeSetting();                                                 // see if the alarm time can be found and set alarm (repeat each hour for changes)
+  pollAlarmTimeSetting(false);                                            // see if the alarm time can be found and set alarm (repeat each hour for changes)
 
   // No vs1053 patches loaded...
   // No real buffering (todo: FreeRTOS queues)
@@ -53,6 +54,8 @@ void setup() {
   // prepareTTSInfo("ik hoop dat u lekker heeft geslapen. <break strength=\"strong\"/>", 3);
   // requestTTSMP3Data();
 
+
+
 }
 
 void loop() {
@@ -64,5 +67,8 @@ void loop() {
       transferAvailableTTSMP3Data();                                        // process TTS data
     }
   }
+  // Serial.println(touchRead(15));
+  // delay(200);
+  handleTouch();
   handleTimer();
 }

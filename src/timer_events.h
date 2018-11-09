@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "general.h"
 #include "alarm.h"
+#include "handlers.h"
 
 void eachSecond();
 void eachMinute();
