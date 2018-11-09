@@ -35,7 +35,7 @@ void setup() {
   slog("VS1053_REG_AUDATA = %x (HEX)", vsReadRegister(VS1053_REG_AUDATA));
   slog("VS1053_REG_VOLUME = %x (HEX)", vsReadRegister(VS1053_REG_VOLUME));
 
-  // internet radio test (enable (1))
+  // internet radio test
   // vsSineTest();                                                           // quick test for sound (debug)
   // host = "ice1.somafm.com";
   // path = "/u80s-128-mp3";
@@ -43,18 +43,16 @@ void setup() {
   // httpGetRequest(host, path);                                             // request stream
   // streamType = MP3_STREAM;                                                // set stream type to MP3 data
 
-  // TTS test (enable (2))
+  // TTS test
   // host = GCLOUD_TTS_HOST;
   // path = GCLOUD_TTS_PATH GCLOUD_KEY;
   // httpConnect(host, port, true);                                          // connect to host
   // httpPostRequest(host, path, TTSPostData("dit is een test."), "application/json;charset=UTF-8"); // request stream
   // streamType = TTS_STREAM;                                                // set stream type to TTS data
 
-  // read latest news, weather and calendar - test (enable (2))
+  // read latest news, weather and calendar - test
   // prepareTTSInfo("ik hoop dat u lekker heeft geslapen. <break strength=\"strong\"/>", 3);
   // requestTTSMP3Data();
-
-
 
 }
 
@@ -67,8 +65,6 @@ void loop() {
       transferAvailableTTSMP3Data();                                        // process TTS data
     }
   }
-  // Serial.println(touchRead(15));
-  // delay(200);
   handleTouch();
   handleTimer();
 }

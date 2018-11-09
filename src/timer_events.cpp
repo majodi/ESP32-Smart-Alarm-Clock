@@ -9,8 +9,8 @@ void eachSecond() {
 void eachMinute() {
   slog("minute event");
   syncTime();                                                             // get up-to-date with time server
-  handleAlarm();                                                          // handle possible alarm
-  handleSnooze();                                                         // handle possible snooze state
+  handleAlarm();                                                          // handle possible alarm (fire it on time)
+  handleSnooze();                                                         // handle possible snooze state (end it on time)
 }
 
 void eachHour() {

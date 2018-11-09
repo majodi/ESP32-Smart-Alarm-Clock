@@ -1,6 +1,6 @@
 # ESP32 Smart Alarm Clock
 
-ESP32 based "Smart" alarm clock. Status: development just started, first tts tests up-and-running.
+ESP32 based "Smart" alarm clock. Status: development just started, first full cycle working (time, alarm, TTS, radio, touch etc.).
 
 ## Technology
 
