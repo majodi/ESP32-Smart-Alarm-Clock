@@ -1,6 +1,7 @@
 #include "setup.h"
 
 void setup() {
+  setupPins();                                                            // initialise pins
   Serial.begin(115200);
   Serial.println();
   Serial.println("***************************");
@@ -13,14 +14,17 @@ void setup() {
     ESP.getFreeHeap());
   setupWiFi();                                                            // connect to WiFi
   configTime(1 * 3600, 0 * 3600, "pool.ntp.org");                         // set time server config for Dutch time
-  syncTime();                                                             // first time sync (later every hour)
-  setupPins();                                                            // initialise pins
+  syncTime();                                                             // first time sync
   setupTimer();                                                           // setup timer for timer_events
   setupSPI();                                                             // setup SPI with VS1053
   setupTouch();                                                           // setup touch(pad)
-  blink(50);                                                              // signal end of setup
   display.setBrightness(0x0f);                                            // turn on display
   pollAlarmTimeSetting(false);                                            // see if the alarm time can be found and set alarm (repeat each hour for changes)
+  blink(50);                                                              // signal end of setup
+
+  // *** tests and comments ***
+
+  // startRadio();
 
   // No vs1053 patches loaded...
   // No real buffering (todo: FreeRTOS queues)
@@ -29,11 +33,11 @@ void setup() {
   // todo: use wifimanager extra parameters for radio preset
 
   // Debug info - check if vs1053 is alive
-  slog("VS1053_REG_MODE   = %x (HEX)", vsReadRegister(VS1053_REG_MODE));
-  slog("VS1053_REG_STATUS = %x (HEX)", vsReadRegister(VS1053_REG_STATUS));
-  slog("VS1053_REG_CLOCKF = %x (HEX)", vsReadRegister(VS1053_REG_CLOCKF));
-  slog("VS1053_REG_AUDATA = %x (HEX)", vsReadRegister(VS1053_REG_AUDATA));
-  slog("VS1053_REG_VOLUME = %x (HEX)", vsReadRegister(VS1053_REG_VOLUME));
+  // slog("VS1053_REG_MODE   = %x (HEX)", vsReadRegister(VS1053_REG_MODE));
+  // slog("VS1053_REG_STATUS = %x (HEX)", vsReadRegister(VS1053_REG_STATUS));
+  // slog("VS1053_REG_CLOCKF = %x (HEX)", vsReadRegister(VS1053_REG_CLOCKF));
+  // slog("VS1053_REG_AUDATA = %x (HEX)", vsReadRegister(VS1053_REG_AUDATA));
+  // slog("VS1053_REG_VOLUME = %x (HEX)", vsReadRegister(VS1053_REG_VOLUME));
 
   // internet radio test
   // vsSineTest();                                                           // quick test for sound (debug)
@@ -67,4 +71,5 @@ void loop() {
   }
   handleTouch();
   handleTimer();
+  // delay(100); // when empty loop during tests...
 }

@@ -11,7 +11,19 @@ void vsReset() {                                                          // res
   vsWriteRegister(VS1053_REG_MODE, VS1053_MODE_SM_SDINEW | VS1053_MODE_SM_LINE1);
   vsWriteRegister(VS1053_REG_CLOCKF, 0x6000);                             // clockfrequency
   vsWriteRegister(VS1053_REG_AUDATA, 44100 + 1);                          // 44.1kHz + stereo
-  vsWriteRegister(VS1053_REG_VOLUME, 30);                                 // volume
+  // vsWriteRegister(VS1053_REG_VOLUME, 7710);                                 // volume
+  vsSetVolume(VOL_LOW);
+}
+
+void vsSetVolume(uint8_t vol) {
+  uint16_t v;
+  v = vol;
+  v <<= 8;
+  v |= vol;
+  slog("Volume: %d", volume);
+  noInterrupts();
+  vsWriteRegister(VS1053_REG_VOLUME, v);
+  interrupts();
 }
 
 uint16_t vsReadRegister(uint8_t vsRegister) {
@@ -59,9 +71,12 @@ void startRadio() {
   httpConnect(host, port, false);                                         // connect to host
   httpGetRequest(host, path);                                             // request stream
   streamType = MP3_STREAM;                                                // set stream type to MP3 data
+  digitalWrite (MUTE_PIN, HIGH);                                          // un-mute
+  volumeDesired = VOL_HIGH;                                               // set volume
 }
 
 void stopRadio() {
+  digitalWrite (MUTE_PIN, LOW);                                           // mute
   if (streamType == MP3_STREAM) {
     streamType = NO_ACTIVE_STREAM;                                        // set stream type to none
     httpEnd();
@@ -93,6 +108,8 @@ void transferAvailableTTSMP3Data() {                                      // tra
       radioOnTTSEnd = false;                                              // reset flag for next talk
       startRadio();                                                       // and start radio
     }
+  } else {
+    slog("No data available");
   }
 }
 
@@ -126,7 +143,7 @@ void vsSineTest() {                                                       // is 
   SPI.write(0x00);
   digitalWrite(VS1053_xDCS, HIGH);                                        // deselect (data)
   SPI.endTransaction();                                                   // close this transaction
-  delay(500);
+  delay(3500);
   SPI.beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));        // Begin exclusive SPI transaction (high clock)
   digitalWrite(VS1053_xDCS, LOW);                                         // chip select (data)
   SPI.write(0x45);

@@ -1,11 +1,17 @@
 #include "setup.h"
 
 void setupPins() {                                                        // initialise pins
+  // general
   pinMode(LED_BUILTIN,       OUTPUT);                                     // signal/debug purpose
+  // radar
+  pinMode(RADAR_PIN,         INPUT);
+  // PAM8403
+  pinMode(MUTE_PIN,          OUTPUT);                                     // Mute sound
+  digitalWrite (MUTE_PIN,    LOW);                                        // start muted --> muted = LOW, not muted = HIGH (can be left floating due to internal pull-up)   
+  // VS1053
   pinMode(VS1053_xDCS,       OUTPUT);                                     // chip select SDI (Serial Data Interface)
   pinMode(VS1053_xCS,        OUTPUT);                                     // chip select SCI (Serial Control Interface)
   pinMode(VS1053_DREQ,       INPUT);                                      // data request
-
   digitalWrite (VS1053_xDCS, HIGH);                                       // chip select is Active LOW
   digitalWrite (VS1053_xCS,  HIGH);
 }

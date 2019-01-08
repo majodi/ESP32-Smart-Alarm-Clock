@@ -44,6 +44,9 @@ const uint8_t TM1637_niet[] = {55, 6, 121, 120};                          // dis
 const uint8_t TM1637_fout[] = {113, 126, 62, 120};                        // display word "fout"
 const uint8_t TM1637_info[] = {6, 55, 113, 126};                          // display word "info"
 
+// *** NeoPixel
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUMPIXELS, NEO_PIXEL_PIN, NEO_GRB + NEO_KHZ800);
+
 // *** Debug ***
 bool logging = true;                                                      // controls Serial console log info on/off
 
@@ -51,6 +54,8 @@ bool logging = true;                                                      // con
 SemaphoreHandle_t SPISemaphore = NULL;                                    // semaphore for exclusive SPI usage
 
 // *** VS1053 ***
+uint8_t volume = VOL_LOW;                                                 // volume setting (lower is louder, initial LOW)
+uint8_t volumeDesired = VOL_LOW;                                          // desired volume setting (when needed will adjust volume in steps slowly every second)
 uint8_t mp3IOBuffer[32];                                                  // IO buffer
 int streamType = NO_ACTIVE_STREAM;                                        // no stream active
 bool radioOnTTSEnd = false;                                               // schedule radio after finishing tts
@@ -68,3 +73,7 @@ int alarmMinute;
 bool alarmSet = false;                                                    // alarm status
 time_t lastForcedPollAlarmTime = 0;                                       // reset time of last forced polling of alarmTime setting
 time_t snoozeStarted = 0;                                                 // when snooze started
+
+// *** Radar ***
+bool movementDetected = false;                                            // movement detected
+int movementDebounce = MOVEMENT_DEBOUNCE_TIME;                            // seconds before arming movement radar again after movement detected

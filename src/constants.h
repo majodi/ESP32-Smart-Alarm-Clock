@@ -6,18 +6,27 @@
 #include <WiFiManager.h>
 #include <WiFiClientSecure.h>
 #include <TM1637Display.h>
+#include <Adafruit_NeoPixel.h>
 #include "private.h"
 
 // *** MCU pin layout ***
-#define VS1053_SCK 18
-#define VS1053_MISO 19
-#define VS1053_MOSI 23
-#define VS1053_xDCS 32
-#define VS1053_xCS 5
-#define VS1053_DREQ 4
+#define VS1053_SCK 18       // geel
+#define VS1053_MISO 19      // oranje
+#define VS1053_MOSI 23      // rood
+#define VS1053_xDCS 32      // bruin
+#define VS1053_xCS 5        // zwart
+#define VS1053_DREQ 4       // wit
+// VS1053_xRST --> ESP32_EN - grijs
+// VS1053_5V --> ESP32_VIN - rood
+// VS1053_GND --> ESP32_GND - zwart
 #define TM1637_CLK 16
 #define TM1637_DIO 17
+// TM1637_5V --> ESP32_VIN - rood (split of vanaf VS1053 dubbele 5V)
+// TM1637_GND --> ESP32_GND - zwart (split)
 #define TOUCH_PAD 15
+#define NEO_PIXEL_PIN 27
+#define MUTE_PIN 22
+#define RADAR_PIN 25
 
 // *** WiFi ***
 extern const char* ssid;
@@ -70,6 +79,10 @@ extern const uint8_t TM1637_niet[];
 extern const uint8_t TM1637_fout[];
 extern const uint8_t TM1637_info[];
 
+// *** NeoPixels ***
+#define NUMPIXELS 8
+extern Adafruit_NeoPixel strip;
+
 // *** Debug ***
 extern bool logging;
 
@@ -77,10 +90,15 @@ extern bool logging;
 extern SemaphoreHandle_t SPISemaphore;
 
 // *** VS1053 ***
+extern uint8_t volume;
+extern uint8_t volumeDesired;
 extern uint8_t mp3IOBuffer[32];
 extern int streamType;
 extern bool radioOnTTSEnd;
 
+#define VOL_LOW 60
+#define VOL_MED 35
+#define VOL_HIGH 25
 #define NO_ACTIVE_STREAM  0
 #define MP3_STREAM  1
 #define TTS_STREAM  2
@@ -139,5 +157,10 @@ extern bool alarmSet;
 extern int alarmState;
 extern time_t lastForcedPollAlarmTime;
 extern time_t snoozeStarted;
+
+// *** Radar ***
+#define MOVEMENT_DEBOUNCE_TIME 10;
+extern bool movementDetected;
+extern int movementDebounce;
 
 #endif

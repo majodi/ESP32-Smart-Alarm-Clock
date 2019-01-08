@@ -20,7 +20,7 @@ void handleTouch() {
       syncTime();                                                         // for last forced timer value
       slog("last forced = %d", lastForcedPollAlarmTime);
       slog("now = %d", mktime(&timeinfo));
-      if (mktime(&timeinfo) - lastForcedPollAlarmTime > 5) {              // if we did not handle such a request just a short time ago
+      if (mktime(&timeinfo) - lastForcedPollAlarmTime > 25) {             // if we did not handle such a request just a short time ago
         lastForcedPollAlarmTime = mktime(&timeinfo);                      // set a timer for checking if we do not refresh too often
         pollAlarmTimeSetting(true);                                       // try to fetch new alarm time with feedback
       }
