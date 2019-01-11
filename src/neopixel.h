@@ -3,6 +3,7 @@
 
 #include "constants.h"
 
+void neoShow();
 uint32_t Wheel(byte WheelPos);
 void colorWipe(uint32_t c, uint8_t wait);
 void rainbow(uint8_t wait);

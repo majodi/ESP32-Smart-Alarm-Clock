@@ -1,6 +1,7 @@
 #include "timer_events.h"
 
 void eachSecond() {
+  slog("v0.2");
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));                   // life sign
   dots = !dots;                                                           // on/off dots every second as seconds indicator
   display.showNumberDecEx(timeinfo.tm_hour*100+timeinfo.tm_min, dots ? 64 : 0, true); // update display
@@ -26,6 +27,24 @@ void eachSecond() {
       volume -= (volume - volumeDesired) / 2;
     }
     vsSetVolume(volume);
+  }
+  if (movementDetected) {
+    for (int i=0; i < strip.numPixels(); i=i+1) {
+      strip.setPixelColor(i, strip.Color(127, 0, 0));
+    }
+    neoShow();
+  } else {
+    if (dots) {
+      for (int i=0; i < strip.numPixels(); i=i+1) {
+        strip.setPixelColor(i, strip.Color(0, 0, 127));
+      }
+      neoShow();
+    } else {
+      for (int i=0; i < strip.numPixels(); i=i+1) {
+        strip.setPixelColor(i, strip.Color(0, 127, 0));
+      }
+      neoShow();
+    }
   }
 }
 

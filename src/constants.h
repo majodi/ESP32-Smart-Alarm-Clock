@@ -7,6 +7,7 @@
 #include <WiFiClientSecure.h>
 #include <TM1637Display.h>
 #include <Adafruit_NeoPixel.h>
+#include <RemoteDebug.h>
 #include "private.h"
 
 // *** MCU pin layout ***
@@ -90,6 +91,7 @@ extern bool logging;
 extern SemaphoreHandle_t SPISemaphore;
 
 // *** VS1053 ***
+extern bool radioPlaying;
 extern uint8_t volume;
 extern uint8_t volumeDesired;
 extern uint8_t mp3IOBuffer[32];
@@ -162,5 +164,11 @@ extern time_t snoozeStarted;
 #define MOVEMENT_DEBOUNCE_TIME 10;
 extern bool movementDetected;
 extern int movementDebounce;
+
+// *** Blynk ***
+extern char blynkAuth[];
+
+// *** remote debug ***
+extern RemoteDebug remoteDebug;
 
 #endif

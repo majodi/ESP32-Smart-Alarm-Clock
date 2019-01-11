@@ -51,3 +51,43 @@ void setupSPI() {
   SPI.begin (VS1053_SCK, VS1053_MISO, VS1053_MOSI);                       // init SPI
   vsReset();
 }
+
+void setupNeoPixel() {
+  strip.begin();                                                          // init neopixel lib
+  for (int i=0; i < strip.numPixels(); i=i+1) {
+    strip.setPixelColor(i, strip.Color(0, 0, 0));
+  }
+  neoShow();                                                              // pixels off
+  neoShow();                                                              // pixels off
+}
+
+void setupRemoteDebug() {
+	remoteDebug.begin("remotedebug");                                       // initiaze the telnet server
+	remoteDebug.setResetCmdEnabled(true);                                   // enable the reset command
+	remoteDebug.showProfiler(true);                                         // profiler
+	remoteDebug.showColors(true);                                           // colors  
+}
+
+void setupOTA() {                                                         // setup over the air updates
+  ArduinoOTA.onStart([]() {
+    String type;
+    if (ArduinoOTA.getCommand() == U_FLASH) {
+      type = "sketch";
+    } else {
+      type = "filesystem";
+    }
+  });
+  // ArduinoOTA.onEnd([]() {
+  // });
+  // ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+  // });
+  // ArduinoOTA.onError([](ota_error_t error) {
+  //   if (error == OTA_AUTH_ERROR) {
+  //   } else if (error == OTA_BEGIN_ERROR) {
+  //   } else if (error == OTA_CONNECT_ERROR) {
+  //   } else if (error == OTA_RECEIVE_ERROR) {
+  //   } else if (error == OTA_END_ERROR) {
+  //   }
+  // });
+  ArduinoOTA.begin();
+ }

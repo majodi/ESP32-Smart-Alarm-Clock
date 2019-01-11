@@ -18,13 +18,15 @@ void setup() {
   setupTimer();                                                           // setup timer for timer_events
   setupSPI();                                                             // setup SPI with VS1053
   setupTouch();                                                           // setup touch(pad)
+  setupNeoPixel();                                                        // setup neoPixels
+  setupBlynk();                                                           // setup Blynk
+  setupRemoteDebug();                                                     // setup remote debug
+  setupOTA();                                                             // setup over the air updates
   display.setBrightness(0x0f);                                            // turn on display
   pollAlarmTimeSetting(false);                                            // see if the alarm time can be found and set alarm (repeat each hour for changes)
   blink(50);                                                              // signal end of setup
 
   // *** tests and comments ***
-
-  // startRadio();
 
   // No vs1053 patches loaded...
   // No real buffering (todo: FreeRTOS queues)
@@ -61,6 +63,7 @@ void setup() {
 }
 
 void loop() {
+  ArduinoOTA.handle();                                                      // first in loop over the air update
   if (streamType != NO_ACTIVE_STREAM) {                                     // should stream data be coming in?
     if (streamType == MP3_STREAM) {
       transferAvailableMP3Data();                                           // process MP3 data
@@ -71,5 +74,7 @@ void loop() {
   }
   handleTouch();
   handleTimer();
+  handleBlynk();
+  remoteDebug.handle();
   // delay(100); // when empty loop during tests...
 }

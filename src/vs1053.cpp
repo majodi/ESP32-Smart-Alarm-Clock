@@ -11,19 +11,20 @@ void vsReset() {                                                          // res
   vsWriteRegister(VS1053_REG_MODE, VS1053_MODE_SM_SDINEW | VS1053_MODE_SM_LINE1);
   vsWriteRegister(VS1053_REG_CLOCKF, 0x6000);                             // clockfrequency
   vsWriteRegister(VS1053_REG_AUDATA, 44100 + 1);                          // 44.1kHz + stereo
-  // vsWriteRegister(VS1053_REG_VOLUME, 7710);                                 // volume
-  vsSetVolume(VOL_LOW);
+  volumeDesired = VOL_LOW;                                                // set desired volume to low as we force real volume to low also
+  blynkSyncState();                                                       // update app state
+  vsSetVolume(VOL_LOW);                                                   // set volume low immediately (no graduate)
 }
 
 void vsSetVolume(uint8_t vol) {
-  uint16_t v;
+  uint16_t v;                                                             // prepare high/low bits
   v = vol;
   v <<= 8;
   v |= vol;
-  slog("Volume: %d", volume);
-  noInterrupts();
-  vsWriteRegister(VS1053_REG_VOLUME, v);
-  interrupts();
+  noInterrupts();                                                         // turn off interrupts
+  vsWriteRegister(VS1053_REG_VOLUME, v);                                  // write value
+  interrupts();                                                           // turn on interrupts again
+  // blynkSyncState();                                                       // update state to app
 }
 
 uint16_t vsReadRegister(uint8_t vsRegister) {
@@ -73,6 +74,8 @@ void startRadio() {
   streamType = MP3_STREAM;                                                // set stream type to MP3 data
   digitalWrite (MUTE_PIN, HIGH);                                          // un-mute
   volumeDesired = VOL_HIGH;                                               // set volume
+  radioPlaying = true;                                                    // radio is playing
+  blynkSyncState();                                                       // update state to app
 }
 
 void stopRadio() {
@@ -81,6 +84,8 @@ void stopRadio() {
     streamType = NO_ACTIVE_STREAM;                                        // set stream type to none
     httpEnd();
   }
+  radioPlaying = false;                                                   // radio is not playing
+  blynkSyncState();                                                       // update state to app
 }
 
 void transferAvailableTTSMP3Data() {                                      // transfer waiting tts data to vs1053

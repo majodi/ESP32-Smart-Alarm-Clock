@@ -10,11 +10,18 @@
 #include "alarm.h"
 #include "handlers.h"
 #include <WiFiManager.h>
+#include <neopixel.h>
+#include <blynkio.h>
+#include <RemoteDebug.h>
+#include <ArduinoOTA.h>
 
 void setupPins();
 void setupWiFi();
 void setupTimer();
 void setupTouch();
 void setupSPI();
+void setupNeoPixel();
+void setupRemoteDebug();
+void setupOTA();
 
 #endif

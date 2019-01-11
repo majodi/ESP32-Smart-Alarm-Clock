@@ -54,6 +54,7 @@ bool logging = true;                                                      // con
 SemaphoreHandle_t SPISemaphore = NULL;                                    // semaphore for exclusive SPI usage
 
 // *** VS1053 ***
+bool radioPlaying = false;                                                // is radio playing?
 uint8_t volume = VOL_LOW;                                                 // volume setting (lower is louder, initial LOW)
 uint8_t volumeDesired = VOL_LOW;                                          // desired volume setting (when needed will adjust volume in steps slowly every second)
 uint8_t mp3IOBuffer[32];                                                  // IO buffer
@@ -77,3 +78,9 @@ time_t snoozeStarted = 0;                                                 // whe
 // *** Radar ***
 bool movementDetected = false;                                            // movement detected
 int movementDebounce = MOVEMENT_DEBOUNCE_TIME;                            // seconds before arming movement radar again after movement detected
+
+// *** Blynk ***
+char blynkAuth[] = BLYNK_AUTH;                                            // set Blynk token
+
+// *** remote debug ***
+RemoteDebug remoteDebug;                                                  // remote debug object

@@ -8,7 +8,8 @@ void slog ( const char* format, ... ) {                                   // for
     vsnprintf (formattedMessage, sizeof(formattedMessage), format, varArgs); // Format message
     va_end (varArgs);                                                     // parameters end
     Serial.print ("! ");                                                  // log formatted message
-    Serial.println (formattedMessage);
+    Serial.println (formattedMessage);                                    // output to serial
+    remoteDebug.println(formattedMessage);                                // also output to telnet
   }
 }
 
