@@ -1,6 +1,6 @@
 # ESP32 Smart Alarm Clock
 
-ESP32 based "Smart" alarm clock. Status: development just started, first full cycle working (time, alarm, TTS, radio, touch etc.).
+ESP32 based "Smart" alarm clock. Talking alarm clock with wake-up sequence (NeoPixel light animation, wake-up sounds, information like news, weather and personal calendar). Touch control. Internet radio. Smart phone app for control and settings. OTA updating and remote console (telnet).
 
 ## Technology
 
@@ -12,16 +12,9 @@ FreeRTOS
 
 VS1053
 
+NeoPixel
+
 Google TTS
 
 ...
 
-## Feature goals
-
-Simple alarm clock
-
-Information like news, weather and personal calendar read aloud
-
-Internet radio
-
-...
