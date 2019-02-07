@@ -10,7 +10,7 @@
 #include "alarm.h"
 #include "handlers.h"
 #include <WiFiManager.h>
-#include <neopixel.h>
+#include <NeoPixelBus.h>
 #include <blynkio.h>
 #include <RemoteDebug.h>
 #include <ArduinoOTA.h>

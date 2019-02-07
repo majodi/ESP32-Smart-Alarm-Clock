@@ -5,7 +5,6 @@
 #include "general.h"
 #include "alarm.h"
 #include "handlers.h"
-#include "neopixel.h"
 
 void eachSecond();
 void eachMinute();

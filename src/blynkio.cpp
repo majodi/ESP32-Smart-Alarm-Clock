@@ -20,7 +20,7 @@ void blynkSyncState() {                                                   // syn
 BLYNK_WRITE(V1) {                                                         // Virtual pin 1 app to device call-back
   int value = param.asInt();                                              // Get value as integer
   if (!radioPlaying && value == 1) {                                      // not playing but app turns radio ON
-    startRadio();                                                         // start radio
+    startRadio(wakeRadioHost, wakeRadioPort, wakeRadioPath);              // start radio
     return;                                                               // short stop
   }
   if (radioPlaying && value == 0) {                                       // playing but app turns radio OFF
@@ -28,7 +28,15 @@ BLYNK_WRITE(V1) {                                                         // Vir
   }
 }
 
-BLYNK_WRITE(V2) {                                                         // Virtual pin 1 app to device call-back
+BLYNK_WRITE(V2) {                                                         // Virtual pin 2 app to device call-back
   int value = param.asInt();                                              // get value as integer
   volumeDesired = (4 * (10 - (value / 100))) + 25;                        // set desired volume from 1-10 scale to 60-25 scale
+}
+
+BLYNK_WRITE(V3) {                                                         // Virtual pin 3 app to device call-back (TEST BUTTON)
+  if (alarmState == ALARM_PENDING) {                                      // waiting for alarm?
+    alarmState = ALARM_ACTIVE;                                            // set alarm state to active
+    alarmSet = false;                                                     // clear alarm time set (wait for next alarm time fetch)
+  }
+  nextAlarmSection(false);                                                // activate next alarm section in sequence (after currentAlarmSection) when this section is done (force = false)
 }

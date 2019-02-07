@@ -24,7 +24,18 @@ void vsSetVolume(uint8_t vol) {
   noInterrupts();                                                         // turn off interrupts
   vsWriteRegister(VS1053_REG_VOLUME, v);                                  // write value
   interrupts();                                                           // turn on interrupts again
-  // blynkSyncState();                                                       // update state to app
+}
+
+void regulateVolume() {
+  if (abs(volume - volumeDesired) > 1) {                                  // if needed catch-up real volume to desired volume
+    if (volume < volumeDesired) {                                         // volume too low?
+      volume += (volumeDesired - volume) / 2;                             // slowly turn up to desired level
+    }
+    if (volume > volumeDesired) {                                         // volume too high?
+      volume -= (volume - volumeDesired) / 2;                             // slowly turn down to desired level
+    }
+    vsSetVolume(volume);                                                  // set new level
+  }
 }
 
 uint16_t vsReadRegister(uint8_t vsRegister) {
@@ -66,26 +77,30 @@ void vsWriteWram(uint16_t address, uint16_t data) {                       // wri
   vsWriteRegister(VS1053_REG_WRAM, data);
 }
 
-void startRadio() {
-  host = "ice1.somafm.com";                                               // todo: make configurable
-  path = "/u80s-128-mp3";
-  httpConnect(host, port, false);                                         // connect to host
-  httpGetRequest(host, path);                                             // request stream
-  streamType = MP3_STREAM;                                                // set stream type to MP3 data
-  digitalWrite (MUTE_PIN, HIGH);                                          // un-mute
-  volumeDesired = VOL_HIGH;                                               // set volume
-  radioPlaying = true;                                                    // radio is playing
-  blynkSyncState();                                                       // update state to app
+void startRadio(char *host, int port, char *path) {
+  if (!radioPlaying) {                                                    // turn on when not playing
+    httpConnect(host, port, false);                                       // connect to host
+    httpGetRequest(host, path);                                           // request stream
+    streamType = MP3_STREAM;                                              // set stream type to MP3 data
+    digitalWrite (MUTE_PIN, HIGH);                                        // un-mute
+    volumeDesired = VOL_HIGH;                                             // set volume
+    radioPlaying = true;                                                  // radio is playing
+    radioTimePlayed = 0;                                                  // reset time played
+    blynkSyncState();                                                     // update state to app
+  }
 }
 
 void stopRadio() {
-  digitalWrite (MUTE_PIN, LOW);                                           // mute
-  if (streamType == MP3_STREAM) {
-    streamType = NO_ACTIVE_STREAM;                                        // set stream type to none
-    httpEnd();
+  if (radioPlaying) {                                                     // turn off only when playing
+    digitalWrite (MUTE_PIN, LOW);                                         // mute
+    if (streamType == MP3_STREAM) {
+      streamType = NO_ACTIVE_STREAM;                                      // set stream type to none
+      httpEnd();
+    }
+    radioPlaying = false;                                                 // radio is not playing
+    radioPlayTime = 0;                                                    // reset play time (continuous) for next start
+    blynkSyncState();                                                     // update state to app
   }
-  radioPlaying = false;                                                   // radio is not playing
-  blynkSyncState();                                                       // update state to app
 }
 
 void transferAvailableTTSMP3Data() {                                      // transfer waiting tts data to vs1053
@@ -93,7 +108,9 @@ void transferAvailableTTSMP3Data() {                                      // tra
   if (httpWaitAvailable(2000)) {                                          // is there actual data waiting?
     handleTouch();                                                        // first handle possible touch (to detect a snooze request)
     bool validResponseData = https.find("\"audioContent\": \"");          // find the audioContent token
-    while (httpWaitAvailable(2000) && validResponseData && alarmState != ALARM_SNOOZED) { // is token found assume data is valid, but check if we want to snooze first
+    TTSPlaying = true;                                                    // assume we have content, so TTS is playing
+    // !! Blocking until full text reading is done !!
+    while (httpWaitAvailable(2000) && validResponseData && alarmState != ALARM_SNOOZED && !TTSEndRequest) { // is token found assume data is valid, but check if we want to snooze first or if there was an end request
       int r = https.readBytes(encbuf, 128);                               // read 4 blocks of 32 bytes encoded data
       encbuf[r] = 0;                                                      // put a delimiter at the end for if we need it for logging
       int decodedLength = Base64.decodedLength(encbuf, r);                // wat will be the length of the decoded data?
@@ -106,15 +123,15 @@ void transferAvailableTTSMP3Data() {                                      // tra
         vsWriteBuffer((uint8_t *) decodedString + offset, w);             // and feed it to the VS1053
         offset += w;                                                      // next bite
       }
+      handleTouch();                                                      // handle possible touch
     }
-    httpEnd();                                                            // assume stream has ended (time-out was 2sec)
-    streamType = NO_ACTIVE_STREAM;                                        // set stream to none
-    if (radioOnTTSEnd && alarmState != ALARM_SNOOZED) {                   // do we want radio after the talking? not if we want to snooze
-      radioOnTTSEnd = false;                                              // reset flag for next talk
-      startRadio();                                                       // and start radio
-    }
-  } else {
-    slog("No data available");
+  }
+  httpEnd();                                                              // assume stream has ended (time-out was 2sec)
+  streamType = NO_ACTIVE_STREAM;                                          // set stream to none
+  TTSPlaying = false;                                                     // TTS is not playing anymore
+  digitalWrite (MUTE_PIN, LOW);                                           // mute
+  if (alarmState == ALARM_ACTIVE) {                                       // if in alarm state (INFO_TTS)
+    nextAlarmSection(false);                                              // start next alarm section (force = false, not needed, TTS always full ending on itself)
   }
 }
 
@@ -125,8 +142,7 @@ void transferAvailableMP3Data() {
       uint8_t bytesread = secureConnect ? https.read(mp3IOBuffer, 32) : http.read(mp3IOBuffer, 32); // get some food
       vsWriteBuffer(mp3IOBuffer, bytesread);                              // and feed it to the VS1053
     } else {
-      httpEnd();                                                          // assume stream has ended (time-out was 2sec)
-      streamType = NO_ACTIVE_STREAM;
+      stopRadio();                                                        // stop radio
     }
   }
 }

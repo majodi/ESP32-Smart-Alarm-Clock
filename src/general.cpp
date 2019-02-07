@@ -22,10 +22,9 @@ void blink ( int count ) {                                                // cou
   }    
 }
 
-void syncTime() {                                                         // sync internal time with NTP server
+void syncTime() {                                                         // sync internal time struct
   if (!getLocalTime(&timeinfo)) {
     timeValid = false;                                                    // internal time no longer accurate, not synced
-    slog("time sync failed!");
   } else {
     timeValid = true;                                                     // internal time up-to-date with real time
     sprintf (timeCstr, "%02d:%02d:%02d",                                  // format internal time to Cstr
@@ -36,7 +35,6 @@ void syncTime() {                                                         // syn
            timeinfo.tm_year + 1900,
            timeinfo.tm_mon + 1,
            timeinfo.tm_mday);
-    slog("internal time synced: %s", timeCstr);
   }
 }
 
@@ -56,5 +54,15 @@ void cleanStr(char *target, char *unwanted) {                             // rep
   while (match != NULL) {
     *match = ' ';
     match = strpbrk(match+1, unwanted);
+  }
+}
+
+void showTime() {
+  if (dots && (alarmState == ALARM_SNOOZED)) {                            // if snoozed show snooze time remaining every 2nd second
+    int minutesRemaining = ((snoozeMinutes * 60) - (mktime(&timeinfo) - snoozeStarted)) / 60; // calculate minutes remaining
+    display.clear();                                                      // clear display
+    display.showNumberDec(minutesRemaining, false, 1, 1);                 // show minutes remaining
+  } else {
+    display.showNumberDecEx(timeinfo.tm_hour*100+timeinfo.tm_min, dots ? 64 : 0, true); // update display
   }
 }

@@ -2,12 +2,15 @@
 #define NEOPIXEL_H 1
 
 #include "constants.h"
+#include "general.h"
 
-void neoShow();
-uint32_t Wheel(byte WheelPos);
-void colorWipe(uint32_t c, uint8_t wait);
-void rainbow(uint8_t wait);
-void rainbowCycle(uint8_t wait);
-void theaterChase(uint32_t c, uint8_t wait);
+void startAnim_Cylon();
+void stopAnim_All();
+void endAnim_All();
+void updateAnim_PixelExponentialIn(AnimationParam param);
+void updateAnim_StripExponentialIn(AnimationParam param);
+void updateAnim_PixelExponentialOut(AnimationParam param);
+void startAnim_CylonMoveOne(int direction, int lastPosition, unsigned long runUntil);
+void startAnim_wideColors();
 
 #endif

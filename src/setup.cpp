@@ -53,12 +53,8 @@ void setupSPI() {
 }
 
 void setupNeoPixel() {
-  strip.begin();                                                          // init neopixel lib
-  for (int i=0; i < strip.numPixels(); i=i+1) {
-    strip.setPixelColor(i, strip.Color(0, 0, 0));
-  }
-  neoShow();                                                              // pixels off
-  neoShow();                                                              // pixels off
+  strip.Begin();                                                          // start neopixel strip
+  strip.Show();                                                           // reset to black
 }
 
 void setupRemoteDebug() {
@@ -77,17 +73,5 @@ void setupOTA() {                                                         // set
       type = "filesystem";
     }
   });
-  // ArduinoOTA.onEnd([]() {
-  // });
-  // ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-  // });
-  // ArduinoOTA.onError([](ota_error_t error) {
-  //   if (error == OTA_AUTH_ERROR) {
-  //   } else if (error == OTA_BEGIN_ERROR) {
-  //   } else if (error == OTA_CONNECT_ERROR) {
-  //   } else if (error == OTA_RECEIVE_ERROR) {
-  //   } else if (error == OTA_END_ERROR) {
-  //   }
-  // });
   ArduinoOTA.begin();
  }

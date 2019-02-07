@@ -6,8 +6,9 @@
 #include <WiFiManager.h>
 #include <WiFiClientSecure.h>
 #include <TM1637Display.h>
-#include <Adafruit_NeoPixel.h>
 #include <RemoteDebug.h>
+#include <NeoPixelBus.h>
+#include <NeoPixelAnimator.h>
 #include "private.h"
 
 // *** MCU pin layout ***
@@ -81,8 +82,25 @@ extern const uint8_t TM1637_fout[];
 extern const uint8_t TM1637_info[];
 
 // *** NeoPixels ***
-#define NUMPIXELS 8
-extern Adafruit_NeoPixel strip;
+extern bool animationsEnded;
+extern const uint8_t PixelPin;
+extern const uint16_t PixelCount;
+extern NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip;
+struct animationStateStruct
+{
+    RgbColor StartingColor;
+    RgbColor EndingColor;
+    uint16_t IndexPixel;
+    void (*postFunction)(int lastDirection, int lastPosition, unsigned long runUntil);
+    int startPixel;
+    int currentDirection;
+    int currentHue;
+    unsigned long runUntil;
+};
+extern const uint16_t animCount;
+extern animationStateStruct animationState[];
+extern NeoPixelAnimator animations;
+extern NeoGamma<NeoGammaTableMethod> colorGamma;
 
 // *** Debug ***
 extern bool logging;
@@ -92,11 +110,14 @@ extern SemaphoreHandle_t SPISemaphore;
 
 // *** VS1053 ***
 extern bool radioPlaying;
+extern int radioPlayTime;
+extern int radioTimePlayed;
+extern bool TTSPlaying;
+extern bool TTSEndRequest;
 extern uint8_t volume;
 extern uint8_t volumeDesired;
 extern uint8_t mp3IOBuffer[32];
 extern int streamType;
-extern bool radioOnTTSEnd;
 
 #define VOL_LOW 60
 #define VOL_MED 35
@@ -129,7 +150,7 @@ extern bool radioOnTTSEnd;
 #define VS1053_MODE_SM_LINE1 0x4000
 #define VS1053_MODE_SM_CLKRANGE 0x8000
 
-// *** TTR ***
+// *** TTR (Text To Read) ***
 #define TTR_MAXLEN 1500
 #define TTR_LEFT sizeof(ttrbuf) - strlen(ttrbuf) - 1
 #define TTR_MAXNEWSITEMLEN 320
@@ -146,11 +167,34 @@ extern char ttrbuf[TTR_MAXLEN];
 // *** Touch ***
 extern uint16_t touchThreshold;
 extern volatile bool touchDetected;
+extern bool touchOn;
+extern int touchHoldCount;
+extern bool touchHold;
+extern int lastTouched;
+extern bool reArmTouch;
 
 // *** Alarm ***
 #define ALARM_PENDING 0
 #define ALARM_ACTIVE 1
 #define ALARM_SNOOZED 3
+#define AS_NONE 0
+#define AS_ANIMATION 1
+#define AS_WAKE_RADIO 2
+#define AS_INFO_TTS 3
+#define AS_CONT_RADIO 4
+extern int currentAlarmSection;
+extern int lastSectionSwitch;
+extern bool alarmAnimation;
+extern bool alarmWakeRadio;
+extern char wakeRadioHost[50];
+extern int wakeRadioPort;
+extern char wakeRadioPath[50];
+extern int wakeRadioMinutes;
+extern bool alarmInfoTTS;
+extern bool alarmContRadio;
+extern char contRadioHost[50];
+extern int contRadioPort;
+extern char contRadioPath[50];
 extern char alarmSearchStartZuluCstr[25];
 extern char alarmSearchEndZuluCstr[25];
 extern int alarmHour;
@@ -159,6 +203,8 @@ extern bool alarmSet;
 extern int alarmState;
 extern time_t lastForcedPollAlarmTime;
 extern time_t snoozeStarted;
+extern int snoozeMinutes;
+
 
 // *** Radar ***
 #define MOVEMENT_DEBOUNCE_TIME 10;

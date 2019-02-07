@@ -120,4 +120,8 @@ void requestTTSMP3Data() {                                                // req
   httpConnect(host, port, true);                                          // connect to host
   httpPostRequest(host, path, TTSPostData(String(ttrbuf)), "application/json;charset=UTF-8"); // request stream
   streamType = TTS_STREAM;                                                // stream should be picked up by the right handler
+  digitalWrite (MUTE_PIN, HIGH);                                          // un-mute
+  volumeDesired = VOL_HIGH;                                               // for speach set volume high immediately (no regulation)
+  volume = VOL_HIGH;
+  vsSetVolume(volume);
 }

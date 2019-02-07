@@ -2,6 +2,7 @@
 
 void setup() {
   setupPins();                                                            // initialise pins
+  logging = true;                                                         // turn on logging (serial and telnet)
   Serial.begin(115200);
   Serial.println();
   Serial.println("***************************");
@@ -63,18 +64,12 @@ void setup() {
 }
 
 void loop() {
-  ArduinoOTA.handle();                                                      // first in loop over the air update
-  if (streamType != NO_ACTIVE_STREAM) {                                     // should stream data be coming in?
-    if (streamType == MP3_STREAM) {
-      transferAvailableMP3Data();                                           // process MP3 data
-    }
-    if (streamType == TTS_STREAM) {
-      transferAvailableTTSMP3Data();                                        // process TTS data
-    }
-  }
+  ArduinoOTA.handle();
+  handleMovement();
+  handleNeoPixel();
+  handleStream();
   handleTouch();
   handleTimer();
   handleBlynk();
   remoteDebug.handle();
-  // delay(100); // when empty loop during tests...
 }

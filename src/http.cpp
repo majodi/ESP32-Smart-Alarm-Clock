@@ -8,7 +8,6 @@ void httpConnect(char *host, int port, bool secure) {
     slog("Connection to %s FAILED", host);
   } else {
     connected = true;
-    slog("Connected to %s", host);
   }
 }
 
@@ -58,7 +57,6 @@ bool httpWaitAvailable(int timeOutTime) {
 
 bool httpFetchAndAdd(char *token, char *target, int maxlen) {
   bool validResponseData = httpWaitAvailable(2000) && secureConnect ? https.find(token) : http.find(token); // see if we received token
-  slog("fetch found %s: %d", token, validResponseData);
   if (validResponseData && httpWaitAvailable(2000)) {
     if (secureConnect) {
       target[strlen(target) + https.readBytesUntil('"', target + strlen(target), maxlen)] = 0; // only this token
@@ -75,5 +73,4 @@ bool httpFetchAndAdd(char *token, char *target, int maxlen) {
 void logResponse(int nrBytes) {
   char response[nrBytes + 1];
   secureConnect ? https.readBytes(response, nrBytes) : http.readBytes(response, nrBytes);
-  slog("response: %s", response);
 }

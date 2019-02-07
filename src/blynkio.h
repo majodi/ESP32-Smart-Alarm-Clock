@@ -3,6 +3,7 @@
 
 #include "constants.h"
 #include "vs1053.h"
+#include "neopixel.h"
 
 void setupBlynk();
 void handleBlynk();
