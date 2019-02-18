@@ -2,6 +2,7 @@
 #define CONSTANTS_H 1
 
 #include <Arduino.h>
+#include <queue>
 #include <SPI.h>
 #include <WiFiManager.h>
 #include <WiFiClientSecure.h>
@@ -10,6 +11,9 @@
 #include <NeoPixelBus.h>
 #include <NeoPixelAnimator.h>
 #include "private.h"
+
+extern bool boot;
+extern bool initialized;
 
 // *** MCU pin layout ***
 #define VS1053_SCK 18       // geel
@@ -154,6 +158,7 @@ extern int streamType;
 #define TTR_MAXLEN 1500
 #define TTR_LEFT sizeof(ttrbuf) - strlen(ttrbuf) - 1
 #define TTR_MAXNEWSITEMLEN 320
+#define SSML_OPENING "ik hoop dat u lekker heeft geslapen. <break strength=\"strong\"/>"
 #define SSML_PAUSE ".<break time=\"500ms\"/>"
 #define SSML_MORNING "Goedemorgen."
 #define SSML_AFTERNOON "Goedemiddag."
@@ -163,6 +168,7 @@ extern int streamType;
 #define SSML_WEATHER_INTRO "Het weer voor vandaag. " SSML_PAUSE
 #define SSML_CALENDAR_INTRO1 "Je agenda voor vandaag. " SSML_PAUSE
 extern char ttrbuf[TTR_MAXLEN];
+extern char alternativeOpening[128];
 
 // *** Touch ***
 extern uint16_t touchThreshold;
@@ -207,11 +213,15 @@ extern int snoozeMinutes;
 
 
 // *** Radar ***
-#define MOVEMENT_DEBOUNCE_TIME 10;
+#define STD_MOVEMENT_DEBOUNCE_TIME 10
+extern int movementDebounceTime;
+extern std::queue<int> movementQ;
+extern int movementsThisHour;
 extern bool movementDetected;
 extern int movementDebounce;
 
 // *** Blynk ***
+#define BLYNK_SERVER_INITIALIZED 2
 extern char blynkAuth[];
 
 // *** remote debug ***

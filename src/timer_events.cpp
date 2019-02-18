@@ -1,9 +1,10 @@
 #include "timer_events.h"
 
 void eachSecond() {
+  updateBootState();
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));                   // life sign
   updateTouchState();                                                     // update touch state
-  updateMovementState();                                                  // update movement state
+  handleMovement();                                                       // handle possible movement state
   handleRadioPlayTime();                                                  // handle possible radio play time
   regulateVolume();                                                       // slowly regulate volume to desired level when needed
   dots = !dots;                                                           // on/off dots every second as seconds indicator
@@ -20,8 +21,17 @@ void eachMinute() {
 void eachHour() {
   slog("hour");
   pollAlarmTimeSetting(false);                                            // see if the alarm time can be found and set alarm for (new) time (silent - no feedback)
+  updateMovementQ();                                                      // update total movements this hour in queue of last 7 hourly totals plus sync app
 }
 
 void eachDay() {
+  slog("day");
+}
 
+void updateBootState() {
+  if (boot && (secondsCounter > 5 || remoteDebug.isActive())) {           // if still in boot state, is telnet ready? (after 5 seconds no longer wait for a possible debug client)
+    boot = false;                                                         // boot sequence ended (ends when able to communicate with outside world or else after 5 seconds anyway)
+    slog("%s", ttrbuf);                                                   // dump buffered messages
+    ttrbuf[0] = 0;                                                        // empty ttrbuf (was used as temporary buffer space to save memory)
+  }
 }

@@ -6,7 +6,8 @@
 
 void handleAlarm();
 void handleMovement();
-void updateMovementState();
+void updateMovementQ();
+int movementsLastSleepCycle();
 void handleNeoPixel();
 void handleSnooze();
 void handleRadioPlayTime();

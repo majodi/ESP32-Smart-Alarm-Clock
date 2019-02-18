@@ -9,16 +9,25 @@ void slog ( const char* format, ... ) {                                   // for
     va_end (varArgs);                                                     // parameters end
     Serial.print ("! ");                                                  // log formatted message
     Serial.println (formattedMessage);                                    // output to serial
-    remoteDebug.println(formattedMessage);                                // also output to telnet
+    if (boot && formattedMessage[0] != '*') {                             // buffer debug messages during boot, skip info messages (*) to save buffer room
+      strncat(ttrbuf, "|", TTR_LEFT);                                     // separator
+      strncat(ttrbuf, formattedMessage, TTR_LEFT);                        // formatted message
+    } else {                                                              // when not in boot mode just send debug message (telnet now activated)
+      remoteDebug.println(formattedMessage);                              // output to telnet
+    }
   }
 }
 
 void blink ( int count ) {                                                // count short blinks of built-in LED to signal something
-  for (int i=0; i<count; ++i) {
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(50);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(50);    
+  for (int i=0; i<count; ++i) {                                           // for nr of count
+    digitalWrite(LED_BUILTIN, HIGH);                                      // built-in led on
+    strip.ClearTo(RgbColor((i%3)*127, (i%2)*255, (2-(i%3))*127));         // set alternating color for all pixels
+    strip.Show();                                                         // and show
+    delay(50);                                                            // short wait
+    digitalWrite(LED_BUILTIN, LOW);                                       // built-in led off
+    strip.ClearTo(RgbColor(0, 0, 0));                                     // set color to black for all pixels
+    strip.Show();                                                         // and show
+    delay(50);                                                            // short wait
   }    
 }
 

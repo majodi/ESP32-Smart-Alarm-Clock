@@ -61,7 +61,7 @@ void setupRemoteDebug() {
 	remoteDebug.begin("remotedebug");                                       // initiaze the telnet server
 	remoteDebug.setResetCmdEnabled(true);                                   // enable the reset command
 	remoteDebug.showProfiler(true);                                         // profiler
-	remoteDebug.showColors(true);                                           // colors  
+	remoteDebug.showColors(true);                                           // colors
 }
 
 void setupOTA() {                                                         // setup over the air updates

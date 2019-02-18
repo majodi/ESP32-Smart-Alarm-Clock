@@ -10,5 +10,6 @@ void eachSecond();
 void eachMinute();
 void eachHour();
 void eachDay();
+void updateBootState();
 
 #endif

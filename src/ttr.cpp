@@ -79,9 +79,11 @@ void ttrAddCalendar() {                                                   // add
   httpGetRequest(host, enhancedPath);                                     // send get request
   bool validResponseData = httpWaitAvailable(2000) && https.find("\"summary\": \""); // first occurrance is calendar object
   int itemCnt = 0;
+  slog("boot: %d", boot);
   while (validResponseData && httpWaitAvailable(2000)) {
     char itemText[51] = {0};
     validResponseData = httpFetchAndAdd("\"summary\": \"", itemText, 50); // fetch items for today (including passed items as reminder) and save in temp var
+    slog("itemText: %s", itemText);
     if (validResponseData) {
       validResponseData = https.find("\"dateTime\": \"");                 // advance to dateTime
       if (validResponseData) {                                  
@@ -95,6 +97,7 @@ void ttrAddCalendar() {                                                   // add
       }
     }
   }
+  slog("ttrbuf right 140: %s", ttrbuf+(strlen(ttrbuf)-140));
   if (!itemCnt) {
     strncat(ttrbuf, "Geen agenda items vandaag.", TTR_LEFT);
   }
@@ -104,9 +107,12 @@ void ttrAddCalendar() {                                                   // add
 void prepareTTSInfo(char *intro, int nrItems) {                           // paste intro to buffer, add news and clean invalid char(s)
   display.setSegments(TM1637_info);                                       // show "info" on display
   strncpy(ttrbuf, (unsigned)(timeinfo.tm_hour-0) < (12) ? SSML_MORNING : (unsigned)(timeinfo.tm_hour-12) < (6) ? SSML_AFTERNOON : SSML_EVENING, TTR_MAXLEN - 1); // greeting
-  strncat(ttrbuf, "Het is vandaag ", TTR_LEFT);
+  strncat(ttrbuf, SSML_DATE_ANOUNCEMENT, TTR_LEFT);                       // date anouncement
   strncat(ttrbuf, "<say-as interpret-as=\"date\" format=\"yyyymmdd\" detail=\"1\">", TTR_LEFT); strncat(ttrbuf, dateCstr, TTR_LEFT); strncat(ttrbuf, "</say-as>, ", TTR_LEFT); // say date
   strncat(ttrbuf, intro, TTR_LEFT);                                       // add intro text
+  static char movementText[128];                                          // buffer for spoken movements text
+  snprintf (movementText, sizeof(movementText), "Ik heb %d bewegingen geregistreerd tijdens de afgelopen 7 uur. <break strength=\"strong\"/>.", movementsLastSleepCycle()); // get nr of movements, convert to text
+  strncat(ttrbuf, movementText, TTR_LEFT);                                // add movements text
   ttrAddNews(nrItems);                                                    // add news items from news provider
   ttrAddWeather();                                                        // add weather from weather provider
   ttrAddCalendar();                                                       // add calendar from google

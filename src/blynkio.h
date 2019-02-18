@@ -8,5 +8,6 @@
 void setupBlynk();
 void handleBlynk();
 void blynkSyncState();
+void blynkSyncMovements();
 
 #endif

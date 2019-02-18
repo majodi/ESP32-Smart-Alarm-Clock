@@ -1,6 +1,7 @@
 #include "constants.h"
 
-char ttrbuf[1500] = {0};                                                        // text to read
+bool boot = true;                                                         // initially boot is true (we are booting)
+bool initialized = false;                                                 // initialized true when synced with server
 
 // *** WiFi ***
 WiFiManager wifiManager;
@@ -71,8 +72,12 @@ uint8_t volumeDesired = VOL_LOW;                                          // des
 uint8_t mp3IOBuffer[32];                                                  // IO buffer
 int streamType = NO_ACTIVE_STREAM;                                        // no stream active
 
+// *** TTR (Text To Read) ***
+char ttrbuf[1500] = {0};                                                  // text to read
+char alternativeOpening[128] = {0};                                       // alternative opening
+
 // *** Touch ***
-uint16_t touchThreshold = 45;                                             // touch sensitivity
+uint16_t touchThreshold = 35;                                             // touch sensitivity
 volatile bool touchDetected = false;                                      // touch detection flag is false
 bool touchOn = false;                                                     // touchState (on after detected, off when on next handle cycle no longer detected)
 int touchHoldCount = 0;                                                   // nr seconds touch was continues
@@ -94,7 +99,7 @@ bool alarmContRadio = true;                                               // ala
 char contRadioHost[50] = "ice1.somafm.com";                               // continuous station host
 int contRadioPort = 80;                                                   // continuous station port
 char contRadioPath[50] = "/u80s-128-mp3";                                 // continuous station path (mount point)
-int alarmState = ALARM_PENDING;                                           // assume waiting for alarm
+int alarmState = ALARM_PENDING;                                           // assume waiting for alarm ALARM_PENDING (other states: ACTIVE - SNOOZE)
 char alarmSearchStartZuluCstr[25];                                        // start of alarm search zulu time format
 char alarmSearchEndZuluCstr[25];                                          // end of alarm search zulu time format
 int alarmHour;                                                            // alarm time
@@ -105,8 +110,11 @@ time_t snoozeStarted = 0;                                                 // whe
 int snoozeMinutes = 6;                                                    // nr of minutes to snooze
 
 // *** Radar ***
+std::queue<int> movementQ;                                                // total movements per hour last 7 hours
+int movementsThisHour = 0;                                                // number of movements this hour
 bool movementDetected = false;                                            // movement detected
-int movementDebounce = MOVEMENT_DEBOUNCE_TIME;                            // seconds before arming movement radar again after movement detected
+int movementDebounceTime = STD_MOVEMENT_DEBOUNCE_TIME;                    // seconds before arming movement radar again after movement detected
+int movementDebounce = movementDebounceTime;                              // deboumce countdown
 
 // *** Blynk ***
 char blynkAuth[] = BLYNK_AUTH;                                            // set Blynk token

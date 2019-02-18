@@ -8,24 +8,24 @@ void setup() {
   Serial.println("***************************");
   Serial.println("* ESP32 Smart Alarm Clock *");
   Serial.println("***************************");
-  Serial.println();
-  slog("running on ESP Core %d (%d MHz). Free Memory: %d.",
+  slog("* running on ESP Core %d (%d MHz). Free Memory: %d.",
     xPortGetCoreID(),
     ESP.getCpuFreqMHz(),
     ESP.getFreeHeap());
+  Serial.println();
+  setupNeoPixel();                                                        // setup neoPixels (needed for life signs, so at start)
   setupWiFi();                                                            // connect to WiFi
+  setupRemoteDebug();                                                     // setup remote debug
+  setupOTA();                                                             // setup over the air updates
   configTime(1 * 3600, 0 * 3600, "pool.ntp.org");                         // set time server config for Dutch time
   syncTime();                                                             // first time sync
   setupTimer();                                                           // setup timer for timer_events
   setupSPI();                                                             // setup SPI with VS1053
   setupTouch();                                                           // setup touch(pad)
-  setupNeoPixel();                                                        // setup neoPixels
   setupBlynk();                                                           // setup Blynk
-  setupRemoteDebug();                                                     // setup remote debug
-  setupOTA();                                                             // setup over the air updates
   display.setBrightness(0x0f);                                            // turn on display
   pollAlarmTimeSetting(false);                                            // see if the alarm time can be found and set alarm (repeat each hour for changes)
-  blink(50);                                                              // signal end of setup
+  blink(30);                                                              // signal end of setup
 
   // *** tests and comments ***
 
@@ -65,11 +65,10 @@ void setup() {
 
 void loop() {
   ArduinoOTA.handle();
-  handleMovement();
+  handleBlynk();
   handleNeoPixel();
   handleStream();
   handleTouch();
   handleTimer();
-  handleBlynk();
   remoteDebug.handle();
 }

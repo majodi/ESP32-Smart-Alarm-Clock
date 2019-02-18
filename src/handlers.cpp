@@ -4,6 +4,7 @@ void handleAlarm() {
   if (alarmState == ALARM_PENDING && alarmSet && timeinfo.tm_hour == alarmHour && timeinfo.tm_min == alarmMinute) { // waiting for alarm? have alarm time? alarm time reached?
     alarmState = ALARM_ACTIVE;                                            // set alarm state to active
     alarmSet = false;                                                     // clear alarm time set (wait for next alarm time fetch)
+    blynkSyncState();                                                     // update state to app
   }
   if (alarmState == ALARM_ACTIVE) {                                       // alarm active?
     nextAlarmSection(false);                                              // activate next alarm section in sequence (after currentAlarmSection) when this section is done (force = false)
@@ -57,6 +58,7 @@ void handleTouch() {
     touchDetected = false;                                                // reset detected event
     portEXIT_CRITICAL(&timerMux);
     if (reArmTouch) {                                                     // if request to re-arm
+      slog("re-arm (return), %d", currentAlarmSection);
       reArmTouch = false;                                                 // reset re-arm switch
       return;                                                             // leave without acting on touch (detection already set false)
     }
@@ -65,6 +67,7 @@ void handleTouch() {
     }
     lastTouched = millis();                                               // if acting then remember time
     if (touchHold) {                                                      // if touch is hold (long touch)
+      touchHoldCount = 0;                                                 // reset hold count to act as debounce
       if (alarmState == ALARM_PENDING) {                                  // alarm pending?
         syncTime();                                                       // refresh time info struct for mktime()
         if (mktime(&timeinfo) - lastForcedPollAlarmTime > 25) {           // if we did not handle such a request just a short time ago
@@ -74,8 +77,10 @@ void handleTouch() {
         return;                                                           // short stop if/then
       }
       if (alarmState == ALARM_SNOOZED) {                                  // if (long)touch when snoozed: end snooze en arm for next alarm (end current alarm cycle)
+        blink(10);                                                        // feedback signal to let loose hold
         currentAlarmSection = AS_NONE;                                    // reset alarm section for next cycle
         alarmState = ALARM_PENDING;                                       // set state to alarm pending
+        blynkSyncState();                                                 // update state to app
         return;                                                           // short stop if/then (for possible future enhancements)
       }
     }
@@ -108,34 +113,42 @@ void nextAlarmSection(bool force) {                                       // swi
         return;                                                           // short stop
       }
       if (animationsEnded) {                                              // switch when animations ended
-        radioPlayTime = 90;                                               // set (wake) radio play time
+        radioPlayTime = wakeRadioMinutes * 60;                            // set (wake) radio play time
         startRadio(wakeRadioHost, wakeRadioPort, wakeRadioPath);          // start wake radio
         currentAlarmSection = AS_WAKE_RADIO;                              // set current section
+        reArmTouch = true;                                                // re arm touch to flush possible unhandled touch events
         return;                                                           // short stop
       }
+      break;
     case AS_WAKE_RADIO:                                                   // --> WAKE_RADIO
       if (force) {                                                        // forced end only?
+slog("wake force stop");
         stopRadio();                                                      // stop radio
         return;                                                           // short stop
       }
       if (!radioPlaying) {                                                // switch when radio not playing (stopped)
-        prepareTTSInfo("ik hoop dat u lekker heeft geslapen. <break strength=\"strong\"/>", 3); // prepare TTS stream
+slog("wake prepare tts");
+        prepareTTSInfo(SSML_OPENING, 3);                                  // prepare TTS stream
         requestTTSMP3Data();                                              // process TTS MP3 data
         currentAlarmSection = AS_INFO_TTS;                                // set current section
         reArmTouch = true;                                                // re arm touch to flush possible unhandled touch events
         return;                                                           // short stop
       }
+      break;
     case AS_INFO_TTS:                                                     // --> INFO_TTS
       if (force) {                                                        // forced end only?
+slog("info zet endrequest");
         TTSEndRequest = true;                                             // request ending of possible TTS stream
         return;                                                           // short stop
       }
       if (!TTSPlaying) {                                                  // switch when TTS not playing (stopped)
+slog("info start radio");
         startRadio(contRadioHost, contRadioPort, contRadioPath);          // start continuous radio
         currentAlarmSection = AS_CONT_RADIO;                              // set current section
         reArmTouch = true;                                                // re arm touch to flush possible unhandled touch events
         return;                                                           // short stop
       }
+      break;
     case AS_CONT_RADIO:                                                   // --> CONT_RADIO (no forced ending, no next section)
       if (!radioPlaying && (alarmState != ALARM_SNOOZED)) {               // if not playing but not snoozed
         currentAlarmSection = AS_NONE;                                    // set section to none
@@ -154,30 +167,43 @@ void updateTouchState() {
 }
 
 void handleMovement() {
-  if (movementDetected) {} // TODO
-}
-
-void updateMovementState() {
-  movementDebounce = movementDebounce > 0 ? movementDebounce - 1 : MOVEMENT_DEBOUNCE_TIME; // count down debounce every second (0 = armed)
+  movementDebounce = movementDebounce > 0 ? movementDebounce - 1 : movementDebounceTime; // count down debounce every second (0 = armed)
   if (movementDebounce == 0) {                                            // if movement detection armed
     movementDetected = false;                                             // reset movement detector to watch for movement (armed)
   }
   if (!movementDetected) {                                                // while not already in detected state (handled by debounce)
-    movementDetected = digitalRead(RADAR_PIN);                            // see if there is movement
+    movementDetected = digitalRead(RADAR_PIN);                            // see if there is a new movement
     if (movementDetected) {                                               // if so
-      // TODO
-      // increase peakValue with debounceTime (clip at high value)
-      // every sec no activity (after debounce cycle) decrease 1
-      // every minute take current peakValue cumulative (write graph)
-      // every hour cumulative / 60 save in last 6 hour array (shift) and reset cumulative
+      slog("movement");
+      movementsThisHour += 1;                                             // register new movement for hourly total
     }
   }
 }
 
+void updateMovementQ() {
+  blynkSyncMovements();                                                   // sync total movements this hour to app before resetting
+  movementQ.push(movementsThisHour);                                      // insert current hour total at end of Q
+  movementsThisHour = 0;                                                  // reset movement counter for current hour
+  while (movementQ.size() > 6) {                                          // do we have more than 6 hourly totals?
+    movementQ.pop();                                                      // pop oldest item, just save the last 6 full hour items
+  }
+}
+
+int movementsLastSleepCycle() {
+  std::queue<int> tmpq = movementQ;                                       // temporary queue for processing
+  int sum = 0;                                                            // to hold sum
+  while (!tmpq.empty()) {                                                 // loop through hour items
+      sum += tmpq.front();                                                // add
+      tmpq.pop();                                                         // remove, next
+  }
+  return sum + movementsThisHour;                                         // add this hour (pardly depending on current time), total 6-7 hours
+}
+
 void handleSnooze() {
   if (alarmState == ALARM_SNOOZED) {                                      // if in snooze state
-    if ((mktime(&timeinfo) - snoozeStarted) > snoozeMinutes*60) {                     // snooze time passed
+    if ((mktime(&timeinfo) - snoozeStarted) > snoozeMinutes*60) {         // snooze time passed
       alarmState = ALARM_ACTIVE;                                          // go back to alarm state
+      blynkSyncState();                                                   // update state to app
     }
   }
 }
