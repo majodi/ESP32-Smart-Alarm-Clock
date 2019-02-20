@@ -79,11 +79,9 @@ void ttrAddCalendar() {                                                   // add
   httpGetRequest(host, enhancedPath);                                     // send get request
   bool validResponseData = httpWaitAvailable(2000) && https.find("\"summary\": \""); // first occurrance is calendar object
   int itemCnt = 0;
-  slog("boot: %d", boot);
   while (validResponseData && httpWaitAvailable(2000)) {
     char itemText[51] = {0};
     validResponseData = httpFetchAndAdd("\"summary\": \"", itemText, 50); // fetch items for today (including passed items as reminder) and save in temp var
-    slog("itemText: %s", itemText);
     if (validResponseData) {
       validResponseData = https.find("\"dateTime\": \"");                 // advance to dateTime
       if (validResponseData) {                                  
@@ -97,7 +95,6 @@ void ttrAddCalendar() {                                                   // add
       }
     }
   }
-  slog("ttrbuf right 140: %s", ttrbuf+(strlen(ttrbuf)-140));
   if (!itemCnt) {
     strncat(ttrbuf, "Geen agenda items vandaag.", TTR_LEFT);
   }

@@ -122,12 +122,10 @@ void nextAlarmSection(bool force) {                                       // swi
       break;
     case AS_WAKE_RADIO:                                                   // --> WAKE_RADIO
       if (force) {                                                        // forced end only?
-slog("wake force stop");
         stopRadio();                                                      // stop radio
         return;                                                           // short stop
       }
       if (!radioPlaying) {                                                // switch when radio not playing (stopped)
-slog("wake prepare tts");
         prepareTTSInfo(SSML_OPENING, 3);                                  // prepare TTS stream
         requestTTSMP3Data();                                              // process TTS MP3 data
         currentAlarmSection = AS_INFO_TTS;                                // set current section
@@ -137,12 +135,10 @@ slog("wake prepare tts");
       break;
     case AS_INFO_TTS:                                                     // --> INFO_TTS
       if (force) {                                                        // forced end only?
-slog("info zet endrequest");
         TTSEndRequest = true;                                             // request ending of possible TTS stream
         return;                                                           // short stop
       }
       if (!TTSPlaying) {                                                  // switch when TTS not playing (stopped)
-slog("info start radio");
         startRadio(contRadioHost, contRadioPort, contRadioPath);          // start continuous radio
         currentAlarmSection = AS_CONT_RADIO;                              // set current section
         reArmTouch = true;                                                // re arm touch to flush possible unhandled touch events
@@ -150,8 +146,8 @@ slog("info start radio");
       }
       break;
     case AS_CONT_RADIO:                                                   // --> CONT_RADIO (no forced ending, no next section)
-      if (!radioPlaying && (alarmState != ALARM_SNOOZED)) {               // if not playing but not snoozed
-        currentAlarmSection = AS_NONE;                                    // set section to none
+      if (!radioPlaying && (alarmState != ALARM_SNOOZED)) {               // if not playing but not snoozed (anymore)
+        startRadio(contRadioHost, contRadioPort, contRadioPath);          // start radio (should be playing now)
       }
       return;
     default:

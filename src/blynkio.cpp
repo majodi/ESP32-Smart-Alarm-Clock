@@ -34,6 +34,7 @@ BLYNK_WRITE(V1) {                                                         // Vir
     return;                                                               // short stop
   }
   if (!radioPlaying && value) {                                           // not playing but app turns radio ON
+  slog("start from blynkwrite");
     startRadio(contRadioHost, contRadioPort, contRadioPath);              // start radio
     return;                                                               // short stop
   }
