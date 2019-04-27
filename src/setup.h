@@ -1,6 +1,8 @@
 #ifndef SETUP_H
 #define SETUP_H 1
 
+#define WEBSOCKET_DISABLED true // WiFiClientSecure.h not found on platform espressif32
+
 #include "constants.h"
 #include "general.h"
 #include "http.h"

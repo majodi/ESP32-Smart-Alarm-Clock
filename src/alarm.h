@@ -6,5 +6,6 @@
 #include "ttr.h"
 
 void pollAlarmTimeSetting(bool feedback);
+void pollAlarmTest();
 
 #endif

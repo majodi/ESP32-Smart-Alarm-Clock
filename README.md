@@ -20,3 +20,11 @@ Google TTS
 
 ...
 
+## Release notes
+
+**1.01 April 27, 2019**
+Temporary adjustments to facilitate new release of RemoteDebug that doesn't play along nicely with PlatformIO. See [GitHub](https://github.com/JoaoLopesF/RemoteDebug/issues/48).
+Added time adjust option (both APP and ESP code) for summer/winter time.
+Fixed adjustment to Zulu time when fetching new alarm time. Currently hardcoded to 1 hour Amsterdam time-zone. In the future this could be another option.
+Added 1 minute time window for early alrm trigger to avoid collision with new alrm time fetch.
+

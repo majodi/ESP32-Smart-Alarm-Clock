@@ -58,7 +58,6 @@ void handleTouch() {
     touchDetected = false;                                                // reset detected event
     portEXIT_CRITICAL(&timerMux);
     if (reArmTouch) {                                                     // if request to re-arm
-      slog("re-arm (return), %d", currentAlarmSection);
       reArmTouch = false;                                                 // reset re-arm switch
       return;                                                             // leave without acting on touch (detection already set false)
     }
@@ -170,7 +169,7 @@ void handleMovement() {
   if (!movementDetected) {                                                // while not already in detected state (handled by debounce)
     movementDetected = digitalRead(RADAR_PIN);                            // see if there is a new movement
     if (movementDetected) {                                               // if so
-      slog("movement");
+      // slog("movement");
       movementsThisHour += 1;                                             // register new movement for hourly total
     }
   }

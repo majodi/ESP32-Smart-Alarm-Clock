@@ -62,6 +62,7 @@ extern char googleToken[200];
 
 // *** Time ***
 extern struct tm timeinfo;
+extern int timeAdjust;
 extern char dateCstr[11];
 extern char timeCstr[9];
 extern char dayStartZuluCstr[25];

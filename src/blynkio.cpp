@@ -34,7 +34,6 @@ BLYNK_WRITE(V1) {                                                         // Vir
     return;                                                               // short stop
   }
   if (!radioPlaying && value) {                                           // not playing but app turns radio ON
-  slog("start from blynkwrite");
     startRadio(contRadioHost, contRadioPort, contRadioPath);              // start radio
     return;                                                               // short stop
   }
@@ -106,6 +105,11 @@ BLYNK_WRITE(V15) {                                                         // Vi
   strcpy(contRadioPath, param.asStr());                                    // get value as string
 }
 
+BLYNK_WRITE(V16) {                                                         // Virtual pin 15 app to device call-back
+  timeAdjust = param.asInt();                                              // get value as integer
+  syncTime();                                                              // sync display time
+}
+
 BLYNK_WRITE(V127) {                                                       // Virtual pin 127 app to device call-back (no widget, only called/requested at boot time after blynk connected)
   if (boot && !initialized) {                                             // if in boot state and not yet initialized
     initialized = true;                                                   // only once
@@ -129,6 +133,7 @@ BLYNK_WRITE(V127) {                                                       // Vir
       Blynk.virtualWrite(V13, contRadioHost);                             // set default contRadioHost        
       Blynk.virtualWrite(V14, contRadioPort);                             // set default contRadioPort        
       Blynk.virtualWrite(V15, contRadioPath);                             // set default contRadioPath
+      Blynk.virtualWrite(V16, timeAdjust);                                // set default timeAdjust
       Blynk.virtualWrite(V127, BLYNK_SERVER_INITIALIZED);                 // set server initialized (keep settings)
     }
   }
@@ -149,5 +154,6 @@ BLYNK_WRITE(V127) {                                                       // Vir
 // V12 = wakeRadioPath[50] $         
 // V13 = contRadioHost[50] $         
 // V14 = contRadioPort 0-32767       
-// V15 = contRadioPath[50] $         
+// V15 = contRadioPath[50] $
+// V16 = timeAdjust -24 - +24
 

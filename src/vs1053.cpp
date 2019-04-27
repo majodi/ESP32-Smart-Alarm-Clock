@@ -109,6 +109,7 @@ void transferAvailableTTSMP3Data() {                                      // tra
     handleTouch();                                                        // first handle possible touch (to detect a snooze request)
     bool validResponseData = https.find("\"audioContent\": \"");          // find the audioContent token
     TTSPlaying = true;                                                    // assume we have content, so TTS is playing
+    slog("TTSPlaying (data available), audiocontent %d, alarmstate %d, endrequest %d", validResponseData, alarmState, TTSEndRequest);
     // !! Blocking until full text reading is done !!
     while (httpWaitAvailable(2000) && validResponseData && alarmState != ALARM_SNOOZED && !TTSEndRequest) { // is token found assume data is valid, but check if we want to snooze first or if there was an end request
       int r = https.readBytes(encbuf, 128);                               // read 4 blocks of 32 bytes encoded data

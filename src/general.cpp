@@ -35,6 +35,7 @@ void syncTime() {                                                         // syn
   if (!getLocalTime(&timeinfo)) {
     timeValid = false;                                                    // internal time no longer accurate, not synced
   } else {
+    timeinfo.tm_hour += timeAdjust;                                       // adjust for summertime (quick fix for now, maybe use https://forum.arduino.cc/index.php?topic=527662.0)
     timeValid = true;                                                     // internal time up-to-date with real time
     sprintf (timeCstr, "%02d:%02d:%02d",                                  // format internal time to Cstr
              timeinfo.tm_hour,
@@ -47,7 +48,10 @@ void syncTime() {                                                         // syn
   }
 }
 
-void setDateTimeStrn(char* dest, time_t adjustment) {                     // set date/time with adjustment in seconds
+void setDateTimeStrn(char* dest, time_t adjustment, bool undoAdjust) {    // set date/time with adjustment in seconds
+  if (undoAdjust) {                                                       // if zulu time needed
+    adjustment -= timeAdjust;                                             // undo possible timeAdjust
+  }
   time_t newSeconds = mktime(&timeinfo) + adjustment;                     // get current time seconds and adjust
   struct tm plus24h = *localtime(&newSeconds);                            // create date/time structure
   sprintf (dest, "%04d-%02d-%02dT%02d:%02d:00.000Z",                      // format date/time and write to dest cstr
@@ -72,6 +76,13 @@ void showTime() {
     display.clear();                                                      // clear display
     display.showNumberDec(minutesRemaining, false, 1, 1);                 // show minutes remaining
   } else {
-    display.showNumberDecEx(timeinfo.tm_hour*100+timeinfo.tm_min, dots ? 64 : 0, true); // update display
+    int hourAdjusted = timeinfo.tm_hour;                                  // take hour value
+    if (hourAdjusted > 23) {                                              // if > 23 (due to summer/winter time adjustment)
+      hourAdjusted = 0 + (hourAdjusted - 24);                             // calculate clock value
+    }
+    if (hourAdjusted < 0) {                                               // if < 0 (due to summer/winter time adjustment)
+      hourAdjusted = 24 - (-1 * hourAdjusted);                            // calculate clock value
+    }
+    display.showNumberDecEx(hourAdjusted*100+timeinfo.tm_min, dots ? 64 : 0, false); // update display
   }
 }

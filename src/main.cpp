@@ -5,9 +5,9 @@ void setup() {
   logging = true;                                                         // turn on logging (serial and telnet)
   Serial.begin(115200);
   Serial.println();
-  Serial.println("***************************");
-  Serial.println("* ESP32 Smart Alarm Clock *");
-  Serial.println("***************************");
+  Serial.println("*********************************");
+  Serial.println("* ESP32 Smart Alarm Clock v1.01 *");
+  Serial.println("*********************************");
   slog("* running on ESP Core %d (%d MHz). Free Memory: %d.",
     xPortGetCoreID(),
     ESP.getCpuFreqMHz(),

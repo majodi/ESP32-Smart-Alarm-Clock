@@ -12,20 +12,22 @@ void eachSecond() {
 }
 
 void eachMinute() {
-  slog("minute");
+  // slog("-----> pollAlarmTest <-----");
+  // pollAlarmTest();
+  // slog("minute %d - %d", minutesCounter, timeinfo.tm_hour*100+timeinfo.tm_min);
   syncTime();                                                             // get time struct up-to-date
   handleAlarm();                                                          // handle possible alarm (fire it on time) or change alarm section
   handleSnooze();                                                         // handle possible snooze state (end it on time)
 }
 
 void eachHour() {
-  slog("hour");
+  slog("hour %d - %d", hoursCounter, timeinfo.tm_hour*100+timeinfo.tm_min);
   pollAlarmTimeSetting(false);                                            // see if the alarm time can be found and set alarm for (new) time (silent - no feedback)
   updateMovementQ();                                                      // update total movements this hour in queue of last 7 hourly totals plus sync app
 }
 
 void eachDay() {
-  slog("day");
+  slog("day %d - %d", timeinfo.tm_hour*100+timeinfo.tm_min);
 }
 
 void updateBootState() {

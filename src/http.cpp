@@ -46,9 +46,9 @@ void httpPostRequest(char *host, char *path, String postData, String contentType
 }
 
 bool httpWaitAvailable(int timeOutTime) {
-  if (!(secureConnect ? https.connected() : http.connected())) {return false;}
+  // if (!(secureConnect ? https.connected() : http.connected())) {return false;}
   int countDown = timeOutTime < 200 ? 200 : timeOutTime;                  // wait at least 200ms
-  while (!(secureConnect ? https.available() : http.available()) && (countDown)) {
+  while (!(secureConnect ? https.connected() : http.connected()) && !(secureConnect ? https.available() : http.available()) && (countDown)) {
     delay(1);
     countDown = countDown ? countDown - 1 : 0;
   }

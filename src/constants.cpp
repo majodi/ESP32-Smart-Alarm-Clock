@@ -22,6 +22,7 @@ char googleToken[200] = {0};
 
 // *** Time ***
 struct tm timeinfo;                                                       // timeinfo structure
+int timeAdjust;                                                           // time adjustment for winter/summer time
 char dateCstr[11] = "2000-01-01";                                         // textual representation of internal date
 char timeCstr[9] = "00:00:00";                                            // textual representation of internal time
 char dayStartZuluCstr[25] = "2000-01-01T00:00:00.000Z";                   // start of day zulu time format
