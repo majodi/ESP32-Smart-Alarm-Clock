@@ -83,6 +83,11 @@ void showTime() {
     if (hourAdjusted < 0) {                                               // if < 0 (due to summer/winter time adjustment)
       hourAdjusted = 24 - (-1 * hourAdjusted);                            // calculate clock value
     }
-    display.showNumberDecEx(hourAdjusted*100+timeinfo.tm_min, dots ? 64 : 0, false); // update display
+    if (hourAdjusted) {                                                   // non zero hour?
+      display.showNumberDecEx(hourAdjusted*100+timeinfo.tm_min, dots ? 64 : 0, false); // update display, no leading zero's "2:36"
+    } else {
+      display.clear();                                                    // clear for first digit not overwritten
+      display.showNumberDecEx(hourAdjusted*100+timeinfo.tm_min, dots ? 64 : 0, true, 3, 1); // update display, leading zero's "0:03"
+    }
   }
 }

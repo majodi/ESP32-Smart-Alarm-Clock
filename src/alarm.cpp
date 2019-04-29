@@ -86,37 +86,37 @@ void pollAlarmTest() {
   char alarmTime[6] = {0};
   if (httpWaitAvailable(2000)) {
     slog("connected and available");
-    // // test 1
-    // char respbuffer[300];
-    // // int resplen = https.readBytes(respbuffer, 299);
-    // // slog("read %d bytes: %s", resplen, respbuffer);
-    // int read = https.readBytesUntil('\n', respbuffer, 299);
-    // respbuffer[read] = 0;
-    // while (read) {
-    //   slog("%s", respbuffer);
-    //   read = https.readBytesUntil('\n', respbuffer, 299);
-    //   respbuffer[read] = 0;
-    // }
-    // test 2
-    if (https.find("\"dateTime\": \"")) {        // see if we have at least one alarm item en position to dateTime
-      slog("found \"dateTime\": \"");
-      if (httpFetchAndAdd("T", alarmTime, 5)) {                             // advance to time part (time exactly 5 so only hh:mm) and add
-        slog("found Txxxxx, time: %s",alarmTime);
-        alarmTime[2] = 0;
-        alarmHour = atoi(alarmTime);                                        // fill hour, minute and set alarm
-        slog("hour: %d", alarmHour);
-        alarmMinute = atoi(alarmTime + 3);
-        slog("minute: %d", alarmMinute);
-        alarmSet = true;
-        slog("alarm set to true at %d - %d", minutesCounter, timeinfo.tm_hour*100+timeinfo.tm_min);
-        slog("Alarm search window was %s - %s", alarmSearchStartZuluCstr, alarmSearchEndZuluCstr);
-        slog("Alarm time: %d:%d", alarmHour, alarmMinute);
-      } else {
-        slog("no T found");
-      }
-    } else {
-      slog("no dateTime found");
+    // test 1
+    char respbuffer[300];
+    // int resplen = https.readBytes(respbuffer, 299);
+    // slog("read %d bytes: %s", resplen, respbuffer);
+    int read = https.readBytesUntil('\n', respbuffer, 299);
+    respbuffer[read] = 0;
+    while (read) {
+      slog("%s", respbuffer);
+      read = https.readBytesUntil('\n', respbuffer, 299);
+      respbuffer[read] = 0;
     }
+    // // test 2
+    // if (https.find("\"dateTime\": \"")) {        // see if we have at least one alarm item en position to dateTime
+    //   slog("found \"dateTime\": \"");
+    //   if (httpFetchAndAdd("T", alarmTime, 5)) {                             // advance to time part (time exactly 5 so only hh:mm) and add
+    //     slog("found Txxxxx, time: %s",alarmTime);
+    //     alarmTime[2] = 0;
+    //     alarmHour = atoi(alarmTime);                                        // fill hour, minute and set alarm
+    //     slog("hour: %d", alarmHour);
+    //     alarmMinute = atoi(alarmTime + 3);
+    //     slog("minute: %d", alarmMinute);
+    //     alarmSet = true;
+    //     slog("alarm set to true at %d - %d", minutesCounter, timeinfo.tm_hour*100+timeinfo.tm_min);
+    //     slog("Alarm search window was %s - %s", alarmSearchStartZuluCstr, alarmSearchEndZuluCstr);
+    //     slog("Alarm time: %d:%d", alarmHour, alarmMinute);
+    //   } else {
+    //     slog("no T found");
+    //   }
+    // } else {
+    //   slog("no dateTime found");
+    // }
   } else {
     slog("no reply after 2 seconds");
   }
