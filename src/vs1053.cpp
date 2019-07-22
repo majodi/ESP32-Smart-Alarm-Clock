@@ -141,7 +141,11 @@ void transferAvailableMP3Data() {
     handleTouch();                                                        // first handle possible touch (to detect a snooze request)
     if (httpWaitAvailable(2000) && alarmState != ALARM_SNOOZED) {         // hungry, we have food and we don't want to snooze
       uint8_t bytesread = secureConnect ? https.read(mp3IOBuffer, 32) : http.read(mp3IOBuffer, 32); // get some food
-      vsWriteBuffer(mp3IOBuffer, bytesread);                              // and feed it to the VS1053
+      if (bytesread) {
+        vsWriteBuffer(mp3IOBuffer, bytesread);                              // and feed it to the VS1053
+      } else {
+        slog("could not read from MP3 stream");
+      }
     } else {
       stopRadio();                                                        // stop radio
     }

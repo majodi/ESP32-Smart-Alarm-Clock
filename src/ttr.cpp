@@ -26,6 +26,7 @@ void ttrAddNews(int nrItems) {                                            // add
   httpGetRequest(host, path);                                             // send get request
   int ttrLen = strlen(ttrbuf);                                            // length of existing ttr (text to read) buffer
   bool validResponseData = httpWaitAvailable(2000) && https.find(",\"title\":\""); // see if we received a (first title)
+  slog("AddNews valid data: %d", validResponseData);
   while (validResponseData && ttrLen < (TTR_MAXLEN - TTR_MAXNEWSITEMLEN) && itemCnt && httpWaitAvailable(2000)) { // get title texts
     ttrbuf[ttrLen + https.readBytesUntil('"', ttrbuf + ttrLen, TTR_MAXNEWSITEMLEN)] = 0; // only the title text (long enough for our purpose)
     strncat(ttrbuf, SSML_PAUSE, TTR_LEFT);                                // add pause
@@ -73,6 +74,7 @@ void ttrAddCalendar() {                                                   // add
   strncat(enhancedPath, dayEndZuluCstr, 25);
   strncat(enhancedPath, "&access_token=", 15);
   strncat(enhancedPath, googleToken, 350 - strlen(enhancedPath));
+  slog("Add Calendar request: %s", enhancedPath);
   httpEnd();                                                              // end former connection
   delay(500);                                                             // give it some time
   httpConnect(host, port, true);                                          // connect

@@ -30,6 +30,7 @@ BLYNK_CONNECTED() {                                                       // whe
 BLYNK_WRITE(V1) {                                                         // Virtual pin 1 app to device call-back
   int value = param.asInt();                                              // Get value as integer
   if (boot && value) {                                                    // when during boot an old radio-is-on state setting detected, reset state
+    radioPlaying = false;                                                 // force state off
     Blynk.virtualWrite(V1, radioPlaying);                                 // sync current state: radio playing
     return;                                                               // short stop
   }
@@ -50,6 +51,7 @@ BLYNK_WRITE(V2) {                                                         // Vir
 BLYNK_WRITE(V3) {                                                         // Virtual pin 3 app to device call-back (trigger alarm)
   int value = param.asInt();                                              // get value as integer
   if (boot && value) {                                                    // when during boot an old alarm-active state setting detected, reset state
+    alarmState = ALARM_PENDING;                                           // force current state to pending
     Blynk.virtualWrite(V3, alarmState);                                   // sync current state: 
     return;                                                               // short stop
   }

@@ -23,7 +23,7 @@ void httpGetRequest(char *host, char *path) {
   String getRequest = String("GET ") + path + " HTTP/1.1\r\n" +
                                       "Host: " + host + "\r\n" + 
                                       "Connection: close\r\n\r\n";
-  // Serial.println(getRequest);
+  // Serial.println(getRequest); // slog can not print String
   if (secureConnect) {
     https.print(getRequest);
   } else {
@@ -46,12 +46,18 @@ void httpPostRequest(char *host, char *path, String postData, String contentType
 }
 
 bool httpWaitAvailable(int timeOutTime) {
-  // if (!(secureConnect ? https.connected() : http.connected())) {return false;}
+  if (!(secureConnect ? https.connected() : http.connected())) {
+    return false;
+  }
   int countDown = timeOutTime < 200 ? 200 : timeOutTime;                  // wait at least 200ms
-  while (!(secureConnect ? https.connected() : http.connected()) && !(secureConnect ? https.available() : http.available()) && (countDown)) {
+  while (!(secureConnect ? https.available() : http.available()) && (countDown)) {
     delay(1);
     countDown = countDown ? countDown - 1 : 0;
   }
+  if (countDown == 0) {
+    slog("no data available");
+  }
+  // slog("httpWaitAvailable: %d", countDown == 0 ? false : true);
   return countDown == 0 ? false : true;
 }
 
