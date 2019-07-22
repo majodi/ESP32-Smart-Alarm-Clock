@@ -22,6 +22,8 @@ Google TTS
 
 ## Release notes
 
+** July 22, 2019**
+Minor adjustments, tested and stable for several months. 
 **1.01 April 27, 2019**
 Temporary adjustments to facilitate new release of RemoteDebug that doesn't play along nicely with PlatformIO. See [GitHub](https://github.com/JoaoLopesF/RemoteDebug/issues/48).
 Added time adjust option (both APP and ESP code) for summer/winter time.
