@@ -68,13 +68,13 @@ bool httpWaitAvailable(int timeOutTime) {
 
 bool httpFetchAndAdd(char *token, char *target, int maxlen) {
   bool validResponseData = httpWaitAvailable(2000) && secureConnect ? https.find(token) : http.find(token); // see if we received token
-  slog("httpFetchAndAdd connected = %d and found token %s", validResponseData, token);
+  // slog("httpFetchAndAdd connected = %d and found token %s", validResponseData, token);
   if (validResponseData && httpWaitAvailable(2000)) {
     if (secureConnect) {
       target[strlen(target) + https.readBytesUntil('"', target + strlen(target), maxlen)] = 0; // only this token
     } else {
       target[strlen(target) + http.readBytesUntil('"', target + strlen(target), maxlen)] = 0; // only this token
-      slog("fetch+add: ", target);
+      // slog("fetch+add: ", target);
     }
     return true;
   } else {
