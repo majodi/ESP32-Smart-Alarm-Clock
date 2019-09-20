@@ -22,6 +22,8 @@ Google TTS
 
 ## Release notes
 
+** Sept 20, 2019**
+Fixed bug in httpWaitAvailable which caused premature ending of http response processing (weather not added to TTS anymore after last update)
 ** July 22, 2019**
 Minor adjustments, tested and stable for several months. 
 **1.01 April 27, 2019**
