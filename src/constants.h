@@ -121,6 +121,7 @@ extern bool TTSPlaying;
 extern bool TTSEndRequest;
 extern uint8_t volume;
 extern uint8_t volumeDesired;
+extern uint8_t volumeOverrule;
 extern uint8_t mp3IOBuffer[32];
 extern int streamType;
 

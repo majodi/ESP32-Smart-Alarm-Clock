@@ -1,6 +1,6 @@
 {
     "terminal.integrated.env.osx": {
-        "PATH": "/Users/majodi/.platformio/penv/bin:/Users/majodi/.platformio/penv:/Library/Frameworks/Python.framework/Versions/3.7/bin:/Users/majodi/dev/angular/google-cloud-sdk/bin:/Library/Frameworks/Python.framework/Versions/2.7/bin:/Library/Frameworks/Python.framework/Versions/3.6/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "PATH": "/Users/majodi/.platformio/penv/bin:/Users/majodi/.platformio/penv:/Library/Frameworks/Python.framework/Versions/3.7/bin:/Users/majodi/dev/angular/google-cloud-sdk/bin:/Library/Frameworks/Python.framework/Versions/2.7/bin:/Library/Frameworks/Python.framework/Versions/3.6/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin",
         "PLATFORMIO_CALLER": "vscode"
     },
     "files.associations": {
@@ -38,6 +38,8 @@
         "type_traits": "cpp",
         "tuple": "cpp",
         "typeinfo": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "string": "cpp",
+        "unordered_set": "cpp"
     }
 }

@@ -70,6 +70,7 @@ bool TTSPlaying = false;                                                  // is 
 bool TTSEndRequest = false;                                               // request to end TTS stream
 uint8_t volume = VOL_LOW;                                                 // volume setting (lower is louder, initial LOW)
 uint8_t volumeDesired = VOL_LOW;                                          // desired volume setting (when needed will adjust volume in steps slowly every second)
+uint8_t volumeOverrule = 0;                                               // temporary overrule desired volume (speach and wake) when > 0
 uint8_t mp3IOBuffer[32];                                                  // IO buffer
 int streamType = NO_ACTIVE_STREAM;                                        // no stream active
 

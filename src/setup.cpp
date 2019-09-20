@@ -72,6 +72,12 @@ void setupOTA() {                                                         // set
     } else {
       type = "filesystem";
     }
+    slog("ota onstart type: ", type);
   });
+
+  ArduinoOTA.onError([](ota_error_t error) {
+    slog("ota onerror: ", error);
+  });
+
   ArduinoOTA.begin();
  }

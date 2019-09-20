@@ -8,6 +8,7 @@ void httpConnect(char *host, int port, bool secure) {
     slog("Connection to %s FAILED", host);
   } else {
     connected = true;
+    slog("Connected to %s", host);
   }
 }
 
@@ -46,9 +47,14 @@ void httpPostRequest(char *host, char *path, String postData, String contentType
 }
 
 bool httpWaitAvailable(int timeOutTime) {
-  if (!(secureConnect ? https.connected() : http.connected())) {
-    return false;
-  }
+  //
+  // next section commented out. connection can be closed and still data available (buffer) so don't return false on closed connection
+  //
+  // if (!(secureConnect ? https.connected() : http.connected())) {
+  //   bool avail = secureConnect ? https.available() : http.available();
+  //   slog("httpWaitAvailable: not connected, available = %d", avail);
+  //   return false;
+  // }
   int countDown = timeOutTime < 200 ? 200 : timeOutTime;                  // wait at least 200ms
   while (!(secureConnect ? https.available() : http.available()) && (countDown)) {
     delay(1);
@@ -57,17 +63,18 @@ bool httpWaitAvailable(int timeOutTime) {
   if (countDown == 0) {
     slog("no data available");
   }
-  // slog("httpWaitAvailable: %d", countDown == 0 ? false : true);
   return countDown == 0 ? false : true;
 }
 
 bool httpFetchAndAdd(char *token, char *target, int maxlen) {
   bool validResponseData = httpWaitAvailable(2000) && secureConnect ? https.find(token) : http.find(token); // see if we received token
+  slog("httpFetchAndAdd connected = %d and found token %s", validResponseData, token);
   if (validResponseData && httpWaitAvailable(2000)) {
     if (secureConnect) {
       target[strlen(target) + https.readBytesUntil('"', target + strlen(target), maxlen)] = 0; // only this token
     } else {
       target[strlen(target) + http.readBytesUntil('"', target + strlen(target), maxlen)] = 0; // only this token
+      slog("fetch+add: ", target);
     }
     return true;
   } else {

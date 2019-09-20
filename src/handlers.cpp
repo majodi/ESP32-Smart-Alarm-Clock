@@ -114,6 +114,7 @@ void nextAlarmSection(bool force) {                                       // swi
       }
       if (animationsEnded) {                                              // switch when animations ended
         radioPlayTime = wakeRadioMinutes * 60;                            // set (wake) radio play time
+        volumeOverrule = VOL_MED;                                         // overrule volume to medium until this radio session stops
         startRadio(wakeRadioHost, wakeRadioPort, wakeRadioPath);          // start wake radio
         currentAlarmSection = AS_WAKE_RADIO;                              // set current section
         reArmTouch = true;                                                // re arm touch to flush possible unhandled touch events

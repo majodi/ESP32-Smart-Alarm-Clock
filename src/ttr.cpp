@@ -127,7 +127,6 @@ void requestTTSMP3Data() {                                                // req
   streamType = TTS_STREAM;                                                // stream should be picked up by the right handler
   TTSPlaying = true;                                                      // assume we have content, so TTS is playing
   digitalWrite (MUTE_PIN, HIGH);                                          // un-mute
-  volumeDesired = VOL_HIGH;                                               // for speach set volume high immediately (no regulation)
-  volume = VOL_HIGH;
-  vsSetVolume(volume);
+  volumeOverrule = VOL_HIGH;                                              // overrule desired volume from app for speach
+  vsSetVolume(volumeOverrule);                                            // for speach set volume high immediately (no regulation)
 }

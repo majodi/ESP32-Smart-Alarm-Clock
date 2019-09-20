@@ -24,17 +24,22 @@ void vsSetVolume(uint8_t vol) {
   noInterrupts();                                                         // turn off interrupts
   vsWriteRegister(VS1053_REG_VOLUME, v);                                  // write value
   interrupts();                                                           // turn on interrupts again
+  volume = vol;                                                           // keep actual volume up-to-date (if not done already)
 }
 
 void regulateVolume() {
-  if (abs(volume - volumeDesired) > 1) {                                  // if needed catch-up real volume to desired volume
-    if (volume < volumeDesired) {                                         // volume too low?
-      volume += (volumeDesired - volume) / 2;                             // slowly turn up to desired level
+  if (volumeOverrule > 0) {
+    vsSetVolume(volumeOverrule);
+  } else {
+    if (abs(volume - volumeDesired) > 1) {                                // if needed catch-up real volume to desired volume
+      if (volume < volumeDesired) {                                       // volume too low?
+        volume += (volumeDesired - volume) / 2;                           // slowly turn up to desired level
+      }
+      if (volume > volumeDesired) {                                       // volume too high?
+        volume -= (volume - volumeDesired) / 2;                           // slowly turn down to desired level
+      }
+      vsSetVolume(volume);                                                // set new level
     }
-    if (volume > volumeDesired) {                                         // volume too high?
-      volume -= (volume - volumeDesired) / 2;                             // slowly turn down to desired level
-    }
-    vsSetVolume(volume);                                                  // set new level
   }
 }
 
@@ -83,7 +88,9 @@ void startRadio(char *host, int port, char *path) {
     httpGetRequest(host, path);                                           // request stream
     streamType = MP3_STREAM;                                              // set stream type to MP3 data
     digitalWrite (MUTE_PIN, HIGH);                                        // un-mute
-    volumeDesired = VOL_HIGH;                                             // set volume
+    if (volumeOverrule > 0) {
+      vsSetVolume(volumeOverrule);                                        // if needed overrule volume immediately (no regulation)
+    }
     radioPlaying = true;                                                  // radio is playing
     radioTimePlayed = 0;                                                  // reset time played
     blynkSyncState();                                                     // update state to app
@@ -93,6 +100,7 @@ void startRadio(char *host, int port, char *path) {
 void stopRadio() {
   if (radioPlaying) {                                                     // turn off only when playing
     digitalWrite (MUTE_PIN, LOW);                                         // mute
+    volumeOverrule = 0;                                                   // reset volume overrule
     if (streamType == MP3_STREAM) {
       streamType = NO_ACTIVE_STREAM;                                      // set stream type to none
       httpEnd();
@@ -126,6 +134,7 @@ void transferAvailableTTSMP3Data() {                                      // tra
       }
       handleTouch();                                                      // handle possible touch
     }
+    volumeOverrule = 0;                                                   // reset possible volume overrule
   }
   httpEnd();                                                              // assume stream has ended (time-out was 2sec)
   streamType = NO_ACTIVE_STREAM;                                          // set stream to none
